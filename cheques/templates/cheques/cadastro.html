@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    {% load static %}  
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >  
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" >  
-    <link rel="stylesheet" href="{% static 'novo.css' %}" >  
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'novo.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
 
@@ -19,31 +20,32 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-primary header">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/"><strong>Cheques</strong></a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/cadastro">CPF/CNPJ</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/bancos">Bancos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/hist">Histórico de cheques</a>
-              </li>
-            </ul>
-          </div>
+            <a class="navbar-brand" href="/cheques"><strong>Cheques</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">CPF/CNPJ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/cheques/bancos">Bancos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/cheques/hist">Histórico de cheques</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-<form action="{% url 'addcadastro' %}" method="post">
-    {% csrf_token %}
+    <form action="{% url 'addcadastro' %}" method="post">
+        {% csrf_token %}
         <p class="tl-filtro">Cadastro de CPF/CNPJ</p>
         <div class="container filtros">
-            
+
             <div class="row labels">
                 <div class="col-2">
                     <p class="valor">Nome</p>
@@ -54,7 +56,7 @@
                     <input type="text" id="nome" name="nome">
                 </div>
             </div>
-            
+
             <div class="row labels">
                 <div class="col-2">
                     <p class="valor">CPF/CNPJ</p>
@@ -68,52 +70,50 @@
 
         </div>
 
-    <hr>
+        <hr>
 
-    
 
-    <div class="container ordens">
-        <div class="row">
-            <div class="col-1">
-                <button type="submit" method="post" class="btn btn-success">Salvar</button>
-            </div>
-            
-            <div class="col-1">
-                <a class="btn btn-danger" href="/novo">Limpar</a>
-            </div>
 
-            <div class="col-1">
-                <a class="btn btn-secondary" href="/">Cancelar</a>
+        <div class="container ordens">
+            <div class="row">
+                <div class="col-1">
+                    <button type="submit" method="post" class="btn btn-success">Salvar</button>
+                </div>
+
+                <div class="col-1">
+                    <a class="btn btn-danger" href="/cheques/cadastro">Limpar</a>
+                </div>
+
+                <div class="col-1">
+                    <a class="btn btn-secondary" href="/cheques">Cancelar</a>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
     {%if lista_empresas%}
     <table class="table table-striped cheques">
         <thead>
             <tr>
-              <th scope="col">#</th>
-              <th style="text-align: center;"scope="col">nome</th>
-              <th style="text-align: center;"scope="col">cpf/cnpj</th>
+                <th scope="col">#</th>
+                <th style="text-align: center;" scope="col">nome</th>
+                <th style="text-align: center;" scope="col">cpf/cnpj</th>
             </tr>
         </thead>
         <tbody>
             {% for empresa in lista_empresas %}
             <tr>
-                
+
                 <th scope="row">{{ forloop.counter }}</th>
                 <td style="text-align: center;">{{ empresa.nome }}</td>
                 <td style="text-align: center;">{{ empresa.cpfpj }}</td>
                 <td style="text-align: center;">
-                    <a class="btn btn-primary" href="delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                        </svg>
-                    </a>
-                    <a class="btn btn-primary" href="{% url 'cadastrodel' id=empresa.id %}"t>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                    <a class="btn btn-primary" href="{% url 'cadastrodel' id=empresa.id %}" t>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-trash" viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                            <path fill-rule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                         </svg>
                     </a>
                 </td>
@@ -125,5 +125,5 @@
     <p style="margin-left: 5px">Ainda não há pessoas/empresas cadastrados.</p>
     {% endif %}
 </body>
-</html>
 
+</html>
