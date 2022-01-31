@@ -1,0 +1,83 @@
+body{
+  background-color: rgb(224, 224, 224);
+  /* font-family: 'Courier New', monospace; */
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+}
+
+.filtros{
+  /* border: 2px solid black; */
+  margin-left: 10px;
+  padding-left: 0px;
+}
+
+.ordens{
+  /* border: 2px solid black; */
+  margin-left: 10px;
+  padding-left: 0px;
+}
+
+.item + .item{
+/* border: 2px solid black; */
+  padding: 10px;
+}
+
+.labels{
+  font-weight: bold;
+}
+
+.debug{
+  border: 2px solid black;
+}
+
+.valor{
+  margin-top: 20px;
+  height: 20px;
+  /* border: 2px dashed #f69c55; */
+}
+
+.header{
+  color: aqua;
+}
+
+.botaoconsulta{
+  margin-top: 10px;
+  text-align: center;
+}
+
+#dtfim{
+  margin-left: 9px;
+}
+
+.tl-filtro{
+  margin-left: 5px;
+  margin-bottom: 0px;
+  margin-top: 5px;
+  padding-top: 0px;
+  font-size: 16px;
+}
+
+.datas{
+  padding-top: 0;
+}
+
+.ata{
+  margin-bottom: 0px;
+}
+
+select{
+  width: 150px;
+}
+
+hr{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.datanovo{
+  width: 225px;
+}
+
+.empresanovo{
+  width: 180px;
+}

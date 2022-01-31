@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}  
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >  
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" >  
+    <link rel="stylesheet" href="{% static 'novo.css' %}" >  
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+
+<body>
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary header">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/"><strong>Cheques</strong></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/cadastro">CPF/CNPJ</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/bancos">Bancos</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+<form action="{% url 'add' %}" method="post">
+    {% csrf_token %}
+    <p class="tl-filtro">Editar cheque</p>
+    <div class="container filtros">
+        <div class="row labels">
+            <div class="col-3 datanovo">
+                <p>Data de liberação</p>
+            </div>
+            <div class="col-2 empresanovo">
+                <p>Empresa</p>
+            </div>
+            <div class="col-2">
+                <p>Banco</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3 datanovo">
+                <input type="date" name="dt_futura" id="dt_futura" value="{{ dt_futura|date:'Y-m-d' }}">
+            </div>
+        
+            <div class="col-2 empresanovo">
+                <select name="empresa" value="{{ empresa }}">
+                    {% for empresa in lista_empresas %}
+                    <option id="empresa" value="{{ empresa.id }}">{{ empresa.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="col-2">
+                <select name="banco" id="banco" value="{{ banco }}">
+                    {% for banco in lista_bancos %}
+                    <option value="{{ banco.id }}">{{ banco.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row labels">
+            <div class="col-2">
+                <p class="valor">Valor</p>
+            </div>
+            <div class="col-1">
+                <p class="valor">Agencia</p>
+            </div>
+            <div class="col-1">
+                <p class="valor">Conta</p>
+            </div>
+            <div class="col-2">
+                <p class="valor">Nº do cheque</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <input type="number" name="valor" id="valor" value="{{ valor }}">
+            </div>
+            <div class="col-1">
+                <input type="number" name="agencia" id="agencia" value="{{ agencia }}">
+            </div>
+            <div class="col-1">
+                <input type="number" name="conta" id="conta" value="{{ conta }}">
+            </div>
+            <div class="col-1">
+                <input type="number" name="nr_cheque" id="nr_cheque" value="{{ nr_cheque }}">
+            </div>
+        </div>
+
+        <div class="row labels">
+            <div class="col-2">
+                <p class="valor">Destinatário</p>
+            </div>
+        </div>
+        <div class="col-2">
+            <input type="text" name="destinatario" id="destinatario" value="{{ destinatario }}">
+        </div>
+    </div>
+
+    <hr>
+
+    
+
+    <div class="container ordens">
+        <div class="row">
+            <div class="col-1">
+                <button type="submit" method="post" class="btn btn-success">Salvar</button>
+            </div>
+            
+            <div class="col-1">
+                <a class="btn btn-danger" href="/novo">Limpar</a>
+            </div>
+
+            <div class="col-1">
+                <a class="btn btn-secondary" href="/">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</form>
+    
+</body>
+</html>
+

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}  
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >  
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" >  
+    <link rel="stylesheet" href="{% static 'main.css' %}" >  
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary header">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/"><strong>Cheques</strong></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/cadastro">CPF/CNPJ</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/bancos">Bancos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/hist">Histórico de cheques</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+    <p class="tl-filtro">Filtros</p>
+    <div class="container filtros">
+        <div class="row labels">
+            <div class="col-3 datas">
+                <p>Data de cadastro</p>
+            </div>
+            <div class="col-3">
+                <p>Data de liberação</p>
+            </div>
+            <div class="col-3">
+                <p>Empresa</p>
+            </div>
+            <div class="col-2">
+                <p>Banco</p>
+            </div>
+        </div>
+
+    <form method="get" name="query" action="{% url 'index' %}">
+        <div class="row">
+            
+            <div class="col-3">
+                <label class="label" for="dt_cadastro_ini">Inicial</label>
+                <input type="date" name="dt_cadastro_ini" id = "dt_cadastro_ini">
+                <label id="dtfim" class="label" for="dt_cadastro_fim">Final</label>
+                <input type="date" name="dt_cadastro_fim" id = "dt_cadastro_fim">
+            </div>
+
+            <div class="col-3">
+                <label class="label" for="dt_liberacao_ini">Inicial</label>
+                <input type="date" id ="dt_liberacao_ini" name="dt_liberacao_ini">
+                <label id="dtfim" class="label" for="dt_liberacao_fim">Final</label>
+                <input type="date" id ="dt_liberacao_fim" name="dt_liberacao_fim">
+            </div>
+    
+        
+            <div class="col-3">
+                <select name="empresa" id="empresa">
+                    <option value="0">Todas empresas</option>
+                    {% for empresa in lista_empresas %}
+                    <option value="{{ empresa.id }}">{{ empresa.nome }} - {{ empresa.cpfpj }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="col-2">
+                <select name="banco" id="banco">
+                    <option value="0">Todos bancos</option>
+                    {% for banco in lista_bancos %}
+                    <option value="{{ banco.id }}">{{ banco.numero }} - {{ banco.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    
+
+    </div>
+    <hr>
+    <div class="container ordens ata">
+        <div class="row">
+
+            <div class="col-1">
+                <p class="labels">Ordenar por:</p>
+            </div>
+
+            <div class="form-check form-check-inline col-1">
+                <label for="dt_liberacao" class="form-check-label">
+                    <input class="form-check-input" id="ordem_dt_liberacao" type="radio" name="ordem" value="Data de liberação" checked="true">Data de liberação
+                </label>
+            </div>
+        
+            <div class="form-check form-check-inline col-1">
+                <label for="dt_cadastro" class="form-check-label">
+                    <input class="form-check-input" id="ordem_dt_cadastro" type="radio" name="ordem" value="Data de cadastro">Data de cadastro
+                </label>
+            </div>
+
+            <div class="col-1 botaoconsulta">
+                <button type="submit" class="btn btn-success">Consultar</button>
+            </div>
+    </form>
+            <div class="col-2 botaoconsulta">
+                <a class="btn btn-primary" href="novo">Novo Cheque</a>
+            </div>
+        </div>
+    </div>
+
+    
+    <hr>
+
+    {%if lista_cheques%}
+    <table class="table table-striped cheques table-bordered">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th style="text-align: center;"scope="col">data liberação</th>
+              <th style="text-align: center;" scope="col">destinatario</th>
+              <th style="text-align: center;" scope="col">valor</th>
+              <th style="text-align: center;"scope="col">nr_cheque</th>
+              <th style="text-align: center;"scope="col">empresa</th>
+              <th style="text-align: center;"scope="col">banco</th>
+              <th style="text-align: center;"scope="col">agencia</th>
+              <th style="text-align: center;"scope="col">data do registro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cheque in lista_cheques %}
+            <tr>
+                
+                <th scope="row">{{ forloop.counter }}</th>
+                <td style="text-align: center;">{{ cheque.dt_futura|date:'d/m' }}</td>
+                <td>{{ cheque.destinatario }}</td>
+                <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
+                <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
+                <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
+                <td>{{ cheque.banco.numero }} - {{ cheque.banco.nome }}</td>
+                <td style="text-align: center;">{{ cheque.agencia }}</td>
+                <td style="text-align: center;">{{ cheque.dt_record|date:'d/m' }}</td>
+                <td style="text-align: center;">
+                    <a class="btn btn-primary" href="{% url 'compensar' id=cheque.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                        </svg>
+                    </a>
+                    <a class="btn btn-primary" href="{% url 'editar' id=cheque.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                    <a class="btn btn-primary" href="{% url 'chequesdel' id=cheque.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="margin-left: 5px">Ainda não há cheques cadastrados.</p>
+    {% endif %}
+    
+</body>
+</html>
+
