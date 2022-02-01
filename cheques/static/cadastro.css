@@ -81,3 +81,10 @@ hr{
 .empresanovo{
   width: 180px;
 }
+
+.logout{
+  height: 30px;
+  text-align: right;
+  right: 40px;
+  position: fixed;
+}
