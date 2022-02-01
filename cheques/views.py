@@ -6,11 +6,17 @@ from .models import Cheque, Empresa, Banco, Historico
 import datetime
 import locale
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as django_logout
 
 locale.setlocale(locale.LC_ALL, "")
 
 
 def home(request):
+    return redirect("index")
+
+
+def logout(request):
+    django_logout(request)
     return redirect("index")
 
 

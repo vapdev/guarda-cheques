@@ -72,3 +72,10 @@ hr{
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.logout{
+  height: 30px;
+  text-align: right;
+  right: 40px;
+  position: fixed;
+}

@@ -16,6 +16,8 @@ SECRET_KEY = "django-insecure-b8s_3#(p9vou_vi92*xamh4=yit_8e+)&&@c%kwst87-upvi+4
 DEBUG = False
 
 ALLOWED_HOSTS = ["guarda-cheques.herokuapp.com"]
+# ALLOWED_HOSTS = ["127.0.0.1"]
+
 
 # Application definition
 
@@ -73,6 +75,14 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

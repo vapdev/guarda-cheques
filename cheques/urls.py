@@ -17,4 +17,5 @@ urlpatterns = [
     path("limparhist/", views.limparhist, name="limparhist"),
     path("compensar/<int:id>", views.compensar, name="compensar"),
     path("edit/", views.edit, name="edit"),
+    path("logout/", views.logout, name="logout"),
 ]
