@@ -114,7 +114,7 @@ def hist(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
     lista_bancos = Banco.objects.all()
-    lista_historico = Historico.objects.all()
+    lista_historico = Historico.objects.all().order_by("dt_comp_excl")
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
