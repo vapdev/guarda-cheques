@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,8 +15,7 @@ SECRET_KEY = "django-insecure-b8s_3#(p9vou_vi92*xamh4=yit_8e+)&&@c%kwst87-upvi+4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["192.168.1.3", "127.0.0.1"]
-
+ALLOWED_HOSTS = ["guarda-cheques.herokuapp.com"]
 
 # Application definition
 
@@ -66,10 +66,10 @@ WSGI_APPLICATION = "guardacheques.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "guardacheques",
-        "USER": "postgres",
-        "PASSWORD": "admin123",
-        "HOST": "localhost",
+        "NAME": "d2ljm6f2vub8m3",
+        "USER": "hnovwoazwrfajw",
+        "PASSWORD": "45f307fc6af1a8ea9f77902c763a9c423027c1f41ce688fedc20afb509a6ba0f",
+        "HOST": "ec2-34-233-157-9.compute-1.amazonaws.com",
         "PORT": "5432",
     }
 }
@@ -108,7 +108,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "static/"
+django_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
