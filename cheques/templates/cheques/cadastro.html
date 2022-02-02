@@ -28,10 +28,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">CPF/CNPJ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/bancos">Bancos</a>
+                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">Cadastro</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/cheques/hist">Histórico de cheques</a>
@@ -49,25 +46,47 @@
         <p class="tl-filtro">Cadastro de CPF/CNPJ</p>
         <div class="container filtros">
 
-            <div class="row labels">
-                <div class="col-2">
-                    <p class="valor">Nome</p>
+            <div>
+                <div class="row justify-content-start labels row-cols-5">
+                    <div class="col">
+                        <p class="valor">Nome</p>
+                    </div>
+                    <div class="col">
+                        <p class="valor">CPF/CNPJ</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-2">
-                    <input type="text" id="nome" name="nome">
+                <div class="row row-cols-5">
+                    <div class="col">
+                        <input type="text" id="nome" name="nome">
+                    </div>
+                    <div class="col">
+                        <input type="text" id="cpfpj" name="cpfpj">
+                    </div>
                 </div>
             </div>
 
-            <div class="row labels">
-                <div class="col-2">
-                    <p class="valor">CPF/CNPJ</p>
+            <div>
+                <div class="row row justify-content-start labels row-cols-5">
+                    <div class="col row-cols-5">
+                        <p class="valor">Banco</p>
+                    </div>
+                    <div class="col">
+                        <p class="valor">Agencia</p>
+                    </div>
+                    <div class="col">
+                        <p class="valor">Conta</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-2">
-                    <input type="text" id="cpfpj" name="cpfpj">
+                <div class="row row-cols-5">
+                    <div class="col">
+                        <input type="text" id="banco" name="banco">
+                    </div>
+                    <div class="col">
+                        <input type="text" id="agencia" name="agencia">
+                    </div>
+                    <div class="col">
+                        <input type="text" id="conta" name="conta">
+                    </div>
                 </div>
             </div>
 
@@ -100,6 +119,9 @@
                 <th scope="col">#</th>
                 <th style="text-align: center;" scope="col">nome</th>
                 <th style="text-align: center;" scope="col">cpf/cnpj</th>
+                <th style="text-align: center;" scope="col">banco</th>
+                <th style="text-align: center;" scope="col">agencia</th>
+                <th style="text-align: center;" scope="col">conta</th>
             </tr>
         </thead>
         <tbody>
@@ -109,6 +131,9 @@
                 <th scope="row">{{ forloop.counter }}</th>
                 <td style="text-align: center;">{{ empresa.nome }}</td>
                 <td style="text-align: center;">{{ empresa.cpfpj }}</td>
+                <td style="text-align: center;">{{ empresa.banco }}</td>
+                <td style="text-align: center;">{{ empresa.agencia }}</td>
+                <td style="text-align: center;">{{ empresa.conta }}</td>
                 <td style="text-align: center;">
                     <a class="btn btn-primary" href="{% url 'cadastrodel' id=empresa.id %}" t>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

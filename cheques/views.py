@@ -2,7 +2,8 @@ from django import http
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
-from .models import Cheque, Empresa, Banco, Historico
+import json as simplejson
+from .models import Cheque, Empresa, Historico
 import datetime
 import locale
 from django.contrib.auth.decorators import login_required
@@ -23,7 +24,6 @@ def logout(request):
 @login_required
 def index(request):
     lista_empresas = Empresa.objects.all()
-    lista_bancos = Banco.objects.all()
     lista_cheques = Cheque.objects.all()
 
     query = {
@@ -68,11 +68,7 @@ def index(request):
     if query["ordem_dt_liberacao"]:
         lista_cheques = Cheque.objects.order_by("dt_futura")
 
-    context = {
-        "lista_cheques": lista_cheques,
-        "lista_empresas": lista_empresas,
-        "lista_bancos": lista_bancos,
-    }
+    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)
 
 
@@ -80,51 +76,38 @@ def index(request):
 def novo(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
-    lista_bancos = Banco.objects.all()
-    context = {
-        "lista_cheques": lista_cheques,
-        "lista_empresas": lista_empresas,
-        "lista_bancos": lista_bancos,
-    }
+    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/novo.html", context)
+
+
+def get_data(request, id):
+    if request.method == "GET":
+        obj = Empresa.objects.get(id=id)
+        print("aqui: " + str(obj.conta))
+        data_dict = {"conta": obj.conta, "banco": obj.banco, "agencia": obj.agencia}
+        data = simplejson.dumps(data_dict)
+        return HttpResponse(data, content_type="application/json")
 
 
 @login_required
 def cadastro(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
-    lista_bancos = Banco.objects.all()
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
-        "lista_bancos": lista_bancos,
     }
     return render(request, "cheques/cadastro.html", context)
-
-
-@login_required
-def bancos(request):
-    lista_cheques = Cheque.objects.all()
-    lista_empresas = Empresa.objects.all()
-    lista_bancos = Banco.objects.all()
-    context = {
-        "lista_cheques": lista_cheques,
-        "lista_empresas": lista_empresas,
-        "lista_bancos": lista_bancos,
-    }
-    return render(request, "cheques/bancos.html", context)
 
 
 @login_required
 def hist(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
-    lista_bancos = Banco.objects.all()
     lista_historico = Historico.objects.all().order_by("dt_comp_excl")
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
-        "lista_bancos": lista_bancos,
         "lista_historico": lista_historico,
     }
     return render(request, "cheques/hist.html", context)
@@ -186,25 +169,13 @@ def addcadastro(request):
         itens = {
             "nome": request.POST.get("nome"),
             "cpfpj": request.POST.get("cpfpj"),
+            "banco": request.POST.get("banco"),
+            "agencia": request.POST.get("agencia"),
+            "conta": request.POST.get("conta"),
             "dt_record": datetime.datetime.today(),
         }
         empresa_instance = Empresa.objects.create(**itens)
         return redirect("cadastro")
-
-
-@login_required
-def addbanco(request):
-    if request.method == "GET":
-        print("get")
-        return HttpResponse("get")
-    elif request.method == "POST":
-        itens = {
-            "nome": request.POST.get("nome"),
-            "numero": request.POST.get("numero"),
-            "dt_record": datetime.datetime.today(),
-        }
-        banco_instance = Banco.objects.create(**itens)
-        return redirect("bancos")
 
 
 @login_required
@@ -258,12 +229,10 @@ def editar(request, id=None):
     if request.method == "GET":
         lista_cheques = Cheque.objects.all()
         lista_empresas = Empresa.objects.all()
-        lista_bancos = Banco.objects.all()
         edit = Cheque.objects.get(id=id)
         context = {
             "lista_cheques": lista_cheques,
             "lista_empresas": lista_empresas,
-            "lista_bancos": lista_bancos,
             "agencia": edit.agencia,
             "dt_futura": edit.dt_futura,
             "empresa": edit.empresa,

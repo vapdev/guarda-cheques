@@ -30,10 +30,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">CPF/CNPJ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/bancos">Bancos</a>
+                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">Cadastro</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/cheques/hist">Histórico de cheques</a>
@@ -49,67 +46,62 @@
         {% csrf_token %}
         <p class="tl-filtro">Lançamento de novo cheque</p>
         <div class="container filtros">
-            <div class="row labels">
-                <div class="col-3 datanovo">
-                    <p>Data de liberação</p>
+            <div class="row labels row-cols-5">
+                <div class="col">
+                    <p class="valor">Empresa</p>
                 </div>
-                <div class="col-2 empresanovo">
-                    <p>Empresa</p>
+                <div class="col">
+                    <p class="valor">Banco</p>
                 </div>
-                <div class="col-2">
-                    <p>Banco</p>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-3 datanovo">
-                    <input type="date" name="dt_futura" id="dt_futura" required>
-                </div>
-
-                <div class="col-2 empresanovo">
-                    <select name="empresa">
-                        {% for empresa in lista_empresas %}
-                        <option id="empresa" value="{{ empresa.id }}">{{ empresa.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-2">
-                    <select name="banco" id="banco">
-                        {% for banco in lista_bancos %}
-                        <option value="{{ banco.id }}">{{ banco.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="row labels">
-                <div class="col-2">
-                    <p class="valor">Valor</p>
-                </div>
-                <div class="col-1">
+                <div class="col">
                     <p class="valor">Agencia</p>
                 </div>
-                <div class="col-1">
+                <div class="col">
                     <p class="valor">Conta</p>
-                </div>
-                <div class="col-2">
-                    <p class="valor">Nº do cheque</p>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-2">
-                    <input type="text" name="valor" id="valor" step="0.01" required>
+            <div class="row row-cols-5">
+                <div class="col">
+                    <select class="form-control" name="empresa" id="empresa">
+                        {% for empresa in lista_empresas %}
+                        <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="col-1">
-                    <input type="number" name="agencia" id="agencia">
+                <div class="col">
+                    <input class="form-control" type="text" name="banco" id="banco" readonly="readonly">
                 </div>
-                <div class="col-1">
-                    <input type="number" name="conta" id="conta">
+                <div class="col">
+                    <input class="form-control" type="text" name="agencia" id="agencia" readonly="readonly">
                 </div>
-                <div class="col-1">
-                    <input type="number" name="nr_cheque" id="nr_cheque">
+                <div class="col">
+                    <input class="form-control" type="text" name="conta" id="conta" readonly="readonly">
+                </div>
+            </div>
+
+            <div class="row row-cols-5 labels">
+                <div class="col">
+                    <p class="valor">Data de liberação</p>
+                </div>
+                <div class="col">
+                    <p class="valor">Valor</p>
+                </div>
+                <div class="col">
+                    <p class="valor">Nº do cheque</p>
+                </div>
+
+            </div>
+
+            <div class="row row-cols-5">
+                <div class="col">
+                    <input class="form-control" type="text" name="valor" id="valor" step="0.01" required>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="number" name="nr_cheque" id="nr_cheque">
+                </div>
+                <div class="col">
+                    <input class="form-control" type="date" name="dt_futura" id="dt_futura" required>
                 </div>
             </div>
 
@@ -144,6 +136,28 @@
         </div>
     </form>
 
+    <script>
+        var a = document.getElementById("empresaopt").value
+        var conta = document.getElementById("conta")
+        var agencia = document.getElementById("agencia")
+        var banco = document.getElementById("banco")
+        console.log(`127.0.0.1/get_data/${a}`)
+        fetch(`http://127.0.0.1:8000/cheques/get_data/${a}`)
+            .then(data => {
+                if (!data.ok) {
+                    throw Error(data.status);
+                }
+                return data.json();
+            }).then(update => {
+                conta.value = update["conta"];
+                banco.value = update["banco"];
+                agencia.value = update["agencia"];
+            }).catch(e => {
+                console.log(e);
+            });
+
+
+    </script>
 </body>
 
 </html>

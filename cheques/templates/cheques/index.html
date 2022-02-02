@@ -27,10 +27,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">CPF/CNPJ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/bancos">Bancos</a>
+                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">Cadastro</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/cheques/hist">Histórico de cheques</a>
@@ -54,9 +51,6 @@
             </div>
             <div class="col-3">
                 <p>Empresa</p>
-            </div>
-            <div class="col-2">
-                <p>Banco</p>
             </div>
         </div>
 
@@ -83,15 +77,6 @@
                         <option value="0">Todas empresas</option>
                         {% for empresa in lista_empresas %}
                         <option value="{{ empresa.id }}">{{ empresa.nome }} - {{ empresa.cpfpj }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-2">
-                    <select name="banco" id="banco">
-                        <option value="0">Todos bancos</option>
-                        {% for banco in lista_bancos %}
-                        <option value="{{ banco.id }}">{{ banco.numero }} - {{ banco.nome }}</option>
                         {% endfor %}
                     </select>
                 </div>
