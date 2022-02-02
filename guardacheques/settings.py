@@ -65,23 +65,23 @@ WSGI_APPLICATION = "guardacheques.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "d2ljm6f2vub8m3",
-#         "USER": "hnovwoazwrfajw",
-#         "PASSWORD": "45f307fc6af1a8ea9f77902c763a9c423027c1f41ce688fedc20afb509a6ba0f",
-#         "HOST": "ec2-34-233-157-9.compute-1.amazonaws.com",
-#         "PORT": "5432",
-#     }
-# }
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "d2ljm6f2vub8m3",
+        "USER": "hnovwoazwrfajw",
+        "PASSWORD": "45f307fc6af1a8ea9f77902c763a9c423027c1f41ce688fedc20afb509a6ba0f",
+        "HOST": "ec2-34-233-157-9.compute-1.amazonaws.com",
+        "PORT": "5432",
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 
 # Password validation
