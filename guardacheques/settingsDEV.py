@@ -15,8 +15,8 @@ SECRET_KEY = "django-insecure-b8s_3#(p9vou_vi92*xamh4=yit_8e+)&&@c%kwst87-upvi+4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ["guarda-cheques.herokuapp.com"]
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["guarda-cheques.herokuapp.com"]
+# ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition
