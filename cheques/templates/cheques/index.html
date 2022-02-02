@@ -147,7 +147,6 @@
         </thead>
         <tbody>
             {% for cheque in lista_cheques %}
-            {{ forloop.counter }}
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td style="text-align: center;">{{ cheque.dt_futura|date:'d/m/y' }}</td>
