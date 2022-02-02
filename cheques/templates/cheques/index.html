@@ -15,8 +15,6 @@
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script>
-        {% comment %} campo_cpfpj = document.getElementById("cpfpj").innerHTML.split(" ").pop() {% endcomment %}
-        
         function formata(campo_cpfpj){
             if (campo_cpfpj.length == 11){
                 return campo_cpfpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
@@ -149,17 +147,17 @@
         </thead>
         <tbody>
             {% for cheque in lista_cheques %}
+            {{ forloop.counter }}
             <tr>
-
                 <th scope="row">{{ forloop.counter }}</th>
                 <td style="text-align: center;">{{ cheque.dt_futura|date:'d/m/y' }}</td>
                 <td>{{ cheque.destinatario }}</td>
                 <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
                 <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
-                <td id="cpfpj">{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
+                <td id="cpfp{{ forloop.counter }}"> {{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }} </td>
                 <script>
                     masked = formata("{{ cheque.empresa.cpfpj }}")
-                    elem = document.getElementById("cpfpj")
+                    elem = document.getElementById("cpfp{{ forloop.counter }}")
                     elem.innerHTML = `{{ cheque.empresa.nome }} - ${masked}`
                 </script>
                 <td>{{ cheque.banco }}</td>
