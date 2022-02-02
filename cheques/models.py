@@ -20,6 +20,9 @@ class Cheque(models.Model):
     )
     destinatario = models.CharField(max_length=50)
     valor = models.FloatField()
+    banco = models.CharField(max_length=50, blank=True, null=True)
+    agencia = models.CharField(max_length=50, blank=True, null=True)
+    conta = models.CharField(max_length=10, blank=True, null=True)
 
 
 class Historico(models.Model):

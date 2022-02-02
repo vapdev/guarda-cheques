@@ -14,12 +14,31 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'novo.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        function updateFields(id) {
+            var a = document.getElementById("empresa").value
+            var conta = document.getElementById("conta")
+            var agencia = document.getElementById("agencia")
+            var banco = document.getElementById("banco")
+            console.log(`127.0.0.1/get_data/${a}`)
+            fetch(`http://127.0.0.1:8000/cheques/get_data/${a}`)
+                .then(data => {
+                    if (!data.ok) {
+                        throw Error(data.status);
+                    }
+                    return data.json();
+                }).then(update => {
+                    conta.value = update["conta"];
+                    banco.value = update["banco"];
+                    agencia.value = update["agencia"];
+                }).catch(e => {
+                    console.log(e);
+                });
+        }
+    </script>
 </head>
 
 <body>
-
-
-
     <nav class="navbar navbar-expand-lg navbar-light bg-primary header">
         <div class="container-fluid">
             <a class="navbar-brand" href="/cheques"><strong>Cheques</strong></a>
@@ -63,9 +82,10 @@
 
             <div class="row row-cols-5">
                 <div class="col">
-                    <select class="form-control" name="empresa" id="empresa">
+                    <select class="form-control" onchange="updateFields(this)" name="empresa" id="empresa">
                         {% for empresa in lista_empresas %}
-                        <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}</option>
+                        <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -82,13 +102,13 @@
 
             <div class="row row-cols-5 labels">
                 <div class="col">
-                    <p class="valor">Data de liberação</p>
+                    <p class="valor">Nº do cheque</p>
                 </div>
                 <div class="col">
                     <p class="valor">Valor</p>
                 </div>
                 <div class="col">
-                    <p class="valor">Nº do cheque</p>
+                    <p class="valor">Data de liberação</p>
                 </div>
 
             </div>
@@ -116,8 +136,6 @@
         </div>
 
         <hr>
-
-
 
         <div class="container ordens">
             <div class="row">
@@ -155,9 +173,8 @@
             }).catch(e => {
                 console.log(e);
             });
-
-
     </script>
+
 </body>
 
 </html>

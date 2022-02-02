@@ -124,15 +124,15 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th style="text-align: center;" scope="col">data liberação</th>
-                <th style="text-align: center;" scope="col">destinatario</th>
-                <th style="text-align: center;" scope="col">valor</th>
+                <th style="text-align: center;" scope="col">data de compensação</th>
+                <th style="text-align: start;" scope="col">destinatario</th>
+                <th style="text-align: right;" scope="col">valor</th>
                 <th style="text-align: center;" scope="col">nr_cheque</th>
-                <th style="text-align: center;" scope="col">empresa</th>
+                <th style="text-align: start;" scope="col">empresa</th>
                 <th style="text-align: center;" scope="col">banco</th>
                 <th style="text-align: center;" scope="col">agencia</th>
                 <th style="text-align: center;" scope="col">conta</th>
-                <th style="text-align: center;" scope="col">data do registro</th>
+                <th style="text-align: center;" scope="col">data de confecção</th>
             </tr>
         </thead>
         <tbody>
@@ -145,7 +145,7 @@
                 <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
                 <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
                 <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
-                <td>{{ cheque.banco.numero }} - {{ cheque.banco.nome }}</td>
+                <td>{{ cheque.banco }}</td>
                 <td style="text-align: center;">{{ cheque.agencia }}</td>
                 <td style="text-align: center;">{{ cheque.conta }}</td>
                 <td style="text-align: center;">{{ cheque.dt_record|date:'d/m/y' }}</td>
