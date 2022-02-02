@@ -14,6 +14,18 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        {% comment %} campo_cpfpj = document.getElementById("cpfpj").innerHTML.split(" ").pop() {% endcomment %}
+        
+        function formata(campo_cpfpj){
+            if (campo_cpfpj.length == 11){
+                return campo_cpfpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            }
+            if (campo_cpfpj.length == 14){
+                return campo_cpfpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -144,7 +156,12 @@
                 <td>{{ cheque.destinatario }}</td>
                 <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
                 <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
-                <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
+                <td id="cpfpj">{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
+                <script>
+                    masked = formata("{{ cheque.empresa.cpfpj }}")
+                    elem = document.getElementById("cpfpj")
+                    elem.innerHTML = `{{ cheque.empresa.nome }} - ${masked}`
+                </script>
                 <td>{{ cheque.banco }}</td>
                 <td style="text-align: center;">{{ cheque.agencia }}</td>
                 <td style="text-align: center;">{{ cheque.conta }}</td>
