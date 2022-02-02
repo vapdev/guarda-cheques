@@ -27,10 +27,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">CPF/CNPJ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/cheques/bancos">Bancos</a>
+                        <a class="nav-link active" aria-current="page" href="/cheques/cadastro/">Cadastro</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/cheques/hist">Histórico de cheques</a>
@@ -54,9 +51,6 @@
             </div>
             <div class="col-3">
                 <p>Empresa</p>
-            </div>
-            <div class="col-2">
-                <p>Banco</p>
             </div>
         </div>
 
@@ -83,15 +77,6 @@
                         <option value="0">Todas empresas</option>
                         {% for empresa in lista_empresas %}
                         <option value="{{ empresa.id }}">{{ empresa.nome }} - {{ empresa.cpfpj }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-2">
-                    <select name="banco" id="banco">
-                        <option value="0">Todos bancos</option>
-                        {% for banco in lista_bancos %}
-                        <option value="{{ banco.id }}">{{ banco.numero }} - {{ banco.nome }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -139,15 +124,15 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th style="text-align: center;" scope="col">data liberação</th>
-                <th style="text-align: center;" scope="col">destinatario</th>
-                <th style="text-align: center;" scope="col">valor</th>
+                <th style="text-align: center;" scope="col">data de compensação</th>
+                <th style="text-align: start;" scope="col">destinatario</th>
+                <th style="text-align: right;" scope="col">valor</th>
                 <th style="text-align: center;" scope="col">nr_cheque</th>
-                <th style="text-align: center;" scope="col">empresa</th>
+                <th style="text-align: start;" scope="col">empresa</th>
                 <th style="text-align: center;" scope="col">banco</th>
                 <th style="text-align: center;" scope="col">agencia</th>
                 <th style="text-align: center;" scope="col">conta</th>
-                <th style="text-align: center;" scope="col">data do registro</th>
+                <th style="text-align: center;" scope="col">data de confecção</th>
             </tr>
         </thead>
         <tbody>
@@ -160,7 +145,7 @@
                 <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
                 <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
                 <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
-                <td>{{ cheque.banco.numero }} - {{ cheque.banco.nome }}</td>
+                <td>{{ cheque.banco }}</td>
                 <td style="text-align: center;">{{ cheque.agencia }}</td>
                 <td style="text-align: center;">{{ cheque.conta }}</td>
                 <td style="text-align: center;">{{ cheque.dt_record|date:'d/m/y' }}</td>

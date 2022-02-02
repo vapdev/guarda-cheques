@@ -74,17 +74,18 @@ hr{
   margin-bottom: 10px;
 }
 
-.datanovo{
-  width: 225px;
-}
-
-.empresanovo{
-  width: 180px;
-}
-
 .logout{
   height: 30px;
   text-align: right;
   right: 40px;
   position: fixed;
+}
+
+.cadastro{
+  margin-left: 100px;
+  padding-left: 10px;
+}
+
+.autoa{
+  background-color: gray;
 }
