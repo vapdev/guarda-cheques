@@ -32,7 +32,7 @@ def index(request):
         "dt_cadastro_ini": request.GET.get("dt_cadastro_ini"),
         "dt_cadastro_fim": request.GET.get("dt_cadastro_fim"),
         "empresa": request.GET.get("empresa"),
-        "banco": request.GET.get("banco"),
+        "destinatario": request.GET.get("destinatario"),
         "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
         "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
     }
@@ -60,13 +60,18 @@ def index(request):
     if query["empresa"] and query["empresa"] != "0":
         lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"]))
 
-    if query["banco"] and query["banco"] != "0":
-        lista_cheques = Cheque.objects.filter(banco_id=int(query["banco"]))
+    if query["destinatario"] and query["empresa"]=="0":
+        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"])
+    elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
+        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"]))
 
     if query["ordem_dt_cadastro"]:
         lista_cheques = Cheque.objects.order_by("dt_record")
     if query["ordem_dt_liberacao"]:
         lista_cheques = Cheque.objects.order_by("dt_futura")
+
+    print("queryset")
+    print(lista_cheques.query)
 
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)
