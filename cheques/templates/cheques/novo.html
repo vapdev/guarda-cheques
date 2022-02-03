@@ -81,7 +81,7 @@
 
             <div class="row row-cols-5">
                 <div class="col">
-                    <select class="form-control" onchange="updateFields(this)" name="empresa" id="empresa" value="{{ ultima_empresa }}"> 
+                    <select class="form-control" onchange="updateFields(this)" name="empresa" id="empresa" value="{{ ultima_empresa }}" autofocus> 
                         {% for empresa in lista_empresas %}
                         <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}
                         </option>
