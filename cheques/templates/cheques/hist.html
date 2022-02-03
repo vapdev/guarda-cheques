@@ -77,7 +77,7 @@
         <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
         <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
         <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
-        <td>{{ cheque.banco.numero }} - {{ cheque.banco.nome }}</td>
+        <td>{{ cheque.banco }}</td>
         <td style="text-align: center;">{{ cheque.agencia }}</td>
         <td style="text-align: center;">{{ cheque.conta }}</td>
         <td style="text-align: center;">{{ cheque.dt_record|date:'d/m/y' }}</td>
@@ -91,7 +91,7 @@
         <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
         <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
         <td>{{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }}</td>
-        <td>{{ cheque.banco.numero }} - {{ cheque.banco.nome }}</td>
+        <td>{{ cheque.banco}}</td>
         <td style="text-align: center;">{{ cheque.agencia }}</td>
         <td style="text-align: center;">{{ cheque.conta }}</td>
         <td style="text-align: center;">{{ cheque.dt_record|date:'d/m/y' }}</td>
