@@ -14,12 +14,30 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'novo.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        function updateFields(id) {
+            var a = document.getElementById("empresa").value
+            var conta = document.getElementById("conta")
+            var agencia = document.getElementById("agencia")
+            var banco = document.getElementById("banco")
+            fetch(`https://guarda-cheques.herokuapp.com/cheques/get_data/${a}`)
+                .then(data => {
+                    if (!data.ok) {
+                        throw Error(data.status);
+                    }
+                    return data.json();
+                }).then(update => {
+                    conta.value = update["conta"];
+                    banco.value = update["banco"];
+                    agencia.value = update["agencia"];
+                }).catch(e => {
+                    console.log(e);
+                });
+        }
+    </script>
 </head>
 
 <body>
-
-
-
     <nav class="navbar navbar-expand-lg navbar-light bg-primary header">
         <div class="container-fluid">
             <a class="navbar-brand" href="/cheques"><strong>Cheques</strong></a>
@@ -42,66 +60,67 @@
             </div>
         </div>
     </nav>
-
     <form action="{% url 'edit' %}" method="post">
         {% csrf_token %}
-        <p class="tl-filtro">Editar cheque</p>
+        <p class="tl-filtro">Lançamento de novo cheque</p>
         <div class="container filtros">
-            <div class="row labels">
-                <div class="col-3 datanovo">
-                    <p>Data de liberação</p>
+            <div class="row labels row-cols-5">
+                <div class="col">
+                    <p class="valor">Empresa</p>
                 </div>
-                <div class="col-2 empresanovo">
-                    <p>Empresa</p>
+                <div class="col">
+                    <p class="valor">Banco</p>
                 </div>
-                <div class="col-2">
-                    <p>Banco</p>
+                <div class="col">
+                    <p class="valor">Agencia</p>
+                </div>
+                <div class="col">
+                    <p class="valor">Conta</p>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-3 datanovo">
-                    <input type="date" name="dt_futura" id="dt_futura" value="{{ dt_futura|date:'Y-m-d' }}">
-                </div>
-
-                <div class="col-2 empresanovo">
-                    <select name="empresa" value="{{ empresa }}">
+            <div class="row row-cols-5">
+                <div class="col">
+                    <select class="form-control" onchange="updateFields(this)" name="empresa" id="empresa" value="{{ ultima_empresa }}"> 
                         {% for empresa in lista_empresas %}
-                        <option id="empresa" value="{{ empresa.id }}">{{ empresa.nome }}</option>
+                        <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
-
-
+                <div class="col">
+                    <input class="form-control" type="text" name="banco" id="banco" readonly="readonly">
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" name="agencia" id="agencia" readonly="readonly">
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" name="conta" id="conta" readonly="readonly">
+                </div>
             </div>
 
-            <div class="row labels">
-                <div class="col-2">
+            <div class="row row-cols-5 labels">
+                <div class="col">
                     <p class="valor">Valor</p>
                 </div>
-                <div class="col-1">
-                    <p class="valor">Agencia</p>
-                </div>
-                <div class="col-1">
-                    <p class="valor">Conta</p>
-                </div>
-                <div class="col-2">
+                <div class="col">
                     <p class="valor">Nº do cheque</p>
                 </div>
+                <div class="col">
+                    <p class="valor">Data de liberação</p>
+                </div>
+
             </div>
 
-            <div class="row">
-                <div class="col-2">
-                    <input type="text" name="valor" id="valor" step="any" value="{{ valor }}">
+            <div class="row row-cols-5">
+                <div class="col">
+                    <input class="form-control" type="text" name="valor" id="valor" step="0.01" required>
                 </div>
-                <div class="col-1">
-                    <input type="number" name="agencia" id="agencia" value="{{ agencia }}">
+                <div class="col">
+                    <input class="form-control" type="number" name="nr_cheque" id="nr_cheque">
                 </div>
-                <div class="col-1">
-                    <input type="number" name="conta" id="conta" value="{{ conta }}">
-                </div>
-                <div class="col-1">
-                    <input type="number" name="nr_cheque" id="nr_cheque" value="{{ nr_cheque }}">
+                <div class="col">
+                    <input class="form-control" type="date" name="dt_futura" id="dt_futura" required>
                 </div>
             </div>
 
@@ -111,17 +130,14 @@
                 </div>
             </div>
             <div class="col-2">
-                <input type="text" name="destinatario" id="destinatario" value="{{ destinatario }}">
+                <input type="text" name="destinatario" id="destinatario" required>
             </div>
         </div>
 
         <hr>
 
-
-
         <div class="container ordens">
             <div class="row">
-                <input type="hidden" id="id" name="id" value="{{id}}">
                 <div class="col-1">
                     <button type="submit" method="post" class="btn btn-success">Salvar</button>
                 </div>
@@ -136,6 +152,26 @@
             </div>
         </div>
     </form>
+
+    <script>
+        var a = document.getElementById("empresa").value
+        var conta = document.getElementById("conta")
+        var agencia = document.getElementById("agencia")
+        var banco = document.getElementById("banco")
+        fetch(`https://guarda-cheques.herokuapp.com/cheques/get_data/${a}`)
+            .then(data => {
+                if (!data.ok) {
+                    throw Error(data.status);
+                }
+                return data.json();
+            }).then(update => {
+                conta.value = update["conta"];
+                banco.value = update["banco"];
+                agencia.value = update["agencia"];
+            }).catch(e => {
+                console.log(e);
+            });
+    </script>
 
 </body>
 

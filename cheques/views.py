@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 
 locale.setlocale(locale.LC_ALL, "")
-
+ULTIMA_EMPRESA = None
 
 def home(request):
     return redirect("index")
@@ -76,7 +76,7 @@ def index(request):
 def novo(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
-    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
+    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "ultima_empresa": ULTIMA_EMPRESA}
     return render(request, "cheques/novo.html", context)
 
 
@@ -132,6 +132,7 @@ def add(request):
         }
 
         cheque_instance = Cheque.objects.create(**itens)
+        ULTIMA_EMPRESA = Empresa.objects.get(pk=request.POST.get("empresa"))
         return redirect("index")
 
 
@@ -148,7 +149,7 @@ def edit(request):
             "nr_cheque": request.POST.get("nr_cheque"),
             "valor": request.POST.get("valor"),
             "empresa": Empresa.objects.get(pk=request.POST.get("empresa")),
-            "banco": Banco.objects.get(pk=request.POST.get("banco")),
+            "banco": request.POST.get("banco"),
             "agencia": request.POST.get("agencia"),
             "conta": request.POST.get("conta"),
             "dt_futura": request.POST.get("dt_futura"),
@@ -246,15 +247,6 @@ def editar(request, id=None):
         return render(request, "cheques/editar.html", context)
     else:
         return redirect("editar")
-
-
-@login_required
-def bancosdel(request, id=None):
-    if request.method == "GET":
-        instance = Banco.objects.get(id=id)
-        instance.delete()
-        return redirect("bancos")
-
 
 @login_required
 def cadastrodel(request, id=None):
