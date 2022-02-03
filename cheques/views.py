@@ -73,13 +73,37 @@ def index(request):
 
 
 @login_required
+def add(request):
+    if request.method == "GET":
+        print("get")
+        return HttpResponse("get")
+    elif request.method == "POST":
+        itens = {
+            "nr_cheque": request.POST.get("nr_cheque"),
+            "valor": request.POST.get("valor"),
+            "empresa": Empresa.objects.get(pk=request.POST.get("empresa")),
+            "banco": request.POST.get("banco"),
+            "agencia": request.POST.get("agencia"),
+            "conta": request.POST.get("conta"),
+            "dt_futura": request.POST.get("dt_futura"),
+            "dt_record": datetime.datetime.today(),
+            "destinatario": request.POST.get("destinatario"),
+        }
+
+        cheque_instance = Cheque.objects.create(**itens)
+        ULTIMA_EMPRESA = Empresa.objects.get(pk=request.POST.get("empresa"))
+        print('empr:' +str(ULTIMA_EMPRESA))
+        return redirect("index")
+
+@login_required
 def novo(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
+    print("teste empresa: "+str(ULTIMA_EMPRESA))
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "ultima_empresa": ULTIMA_EMPRESA}
     return render(request, "cheques/novo.html", context)
 
-
+@login_required
 def get_data(request, id):
     if request.method == "GET":
         obj = Empresa.objects.get(id=id)
@@ -111,50 +135,6 @@ def hist(request):
         "lista_historico": lista_historico,
     }
     return render(request, "cheques/hist.html", context)
-
-
-@login_required
-def add(request):
-    if request.method == "GET":
-        print("get")
-        return HttpResponse("get")
-    elif request.method == "POST":
-        itens = {
-            "nr_cheque": request.POST.get("nr_cheque"),
-            "valor": request.POST.get("valor"),
-            "empresa": Empresa.objects.get(pk=request.POST.get("empresa")),
-            "banco": request.POST.get("banco"),
-            "agencia": request.POST.get("agencia"),
-            "conta": request.POST.get("conta"),
-            "dt_futura": request.POST.get("dt_futura"),
-            "dt_record": datetime.datetime.today(),
-            "destinatario": request.POST.get("destinatario"),
-        }
-
-        cheque_instance = Cheque.objects.create(**itens)
-        ULTIMA_EMPRESA = Empresa.objects.get(pk=request.POST.get("empresa"))
-        return redirect("index")
-
-
-@login_required
-def edit(request):
-    if request.method == "GET":
-        print("get")
-        return HttpResponse("get")
-    elif request.method == "POST":
-        id = request.POST.get("id")
-        print(id)
-        cheque_instance = Cheque.objects.get(id=id)
-        itens = {
-            "nr_cheque": request.POST.get("nr_cheque"),
-            "valor": request.POST.get("valor"),
-            "empresa": Empresa.objects.get(pk=request.POST.get("empresa")),
-            "dt_futura": request.POST.get("dt_futura"),
-            "destinatario": request.POST.get("destinatario"),
-        }
-
-        cheque_instance = Cheque.objects.update(**itens)
-        return redirect("index")
 
 
 @login_required
@@ -244,6 +224,27 @@ def editar(request, id=None):
         return render(request, "cheques/editar.html", context)
     else:
         return redirect("editar")
+
+
+@login_required
+def edit(request):
+    if request.method == "GET":
+        print("get")
+        return HttpResponse("get")
+    elif request.method == "POST":
+        id = request.POST.get("id")
+        cheque_instance = Cheque.objects.get(id=id)
+        cheque_instance.nr_cheque= request.POST.get("nr_cheque")
+        cheque_instance.valor= request.POST.get("valor")
+        cheque_instance.agencia= request.POST.get("agencia")
+        cheque_instance.conta= request.POST.get("conta")
+        cheque_instance.banco= request.POST.get("banco")
+        cheque_instance.empresa= Empresa.objects.get(pk=request.POST.get("empresa"))
+        cheque_instance.dt_futura= request.POST.get("dt_futura")
+        cheque_instance.destinatario= request.POST.get("destinatario")
+        
+        cheque_instance.save()
+        return redirect("index")
 
 @login_required
 def cadastrodel(request, id=None):
