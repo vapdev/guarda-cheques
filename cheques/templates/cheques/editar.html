@@ -120,7 +120,7 @@
                     <input class="form-control" type="number" name="nr_cheque" id="nr_cheque" value="{{ nr_cheque }}">
                 </div>
                 <div class="col">
-                    <input class="form-control" type="date" name="dt_futura" id="dt_futura" value="{{ dt_futura }}"required>
+                    <input class="form-control" type="date" name="dt_futura" id="dt_futura" value="{{ dt_futura|date:"Y-m-d" }}"required>
                 </div>
             </div>
 
