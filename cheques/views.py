@@ -149,9 +149,6 @@ def edit(request):
             "nr_cheque": request.POST.get("nr_cheque"),
             "valor": request.POST.get("valor"),
             "empresa": Empresa.objects.get(pk=request.POST.get("empresa")),
-            "banco": request.POST.get("banco"),
-            "agencia": request.POST.get("agencia"),
-            "conta": request.POST.get("conta"),
             "dt_futura": request.POST.get("dt_futura"),
             "destinatario": request.POST.get("destinatario"),
         }
