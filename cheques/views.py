@@ -11,6 +11,7 @@ from xhtml2pdf import pisa
 from django.views import View
 from io import BytesIO
 from django.template.loader import get_template
+from django.db.models import Sum
 
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
@@ -104,11 +105,13 @@ class DownloadPDF(View):
             lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
             lista_filtros.append(f'Relatório dos cheques compensados pelo destinatário {query["destinatario"]} pagos pela empresa {query["empresa"]}')
             
-        context = {"lista_cheques": lista_cheques}
+        context = {"lista_cheques": lista_cheques,
+                   "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
         
         if lista_filtros:
             context = {"lista_cheques": lista_cheques,
-                    "lista_filtros": lista_filtros[0]}
+                    "lista_filtros": lista_filtros[0],
+                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
         
         print(lista_filtros)
 
