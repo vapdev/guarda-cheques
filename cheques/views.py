@@ -95,15 +95,15 @@ class DownloadPDF(View):
 
         if query["empresa"] and query["empresa"] != "0":
             lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques compensados pela empresa {empresa.nome}')
+            lista_filtros.append(f'Relatório dos cheques da empresa {empresa.nome}')
 
         if query["destinatario"] and query["empresa"]=="0":
             lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques compensados pelo destinatário {query["destinatario"]}')
+            lista_filtros.append(f'Relatório dos cheques de destinatário {query["destinatario"]}')
 
         elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
             lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques compensados pelo destinatário {query["destinatario"]} pagos pela empresa {query["empresa"]}')
+            lista_filtros.append(f'Relatório dos cheques de destinatário {query["destinatario"]} confeccionados pela empresa {query["empresa"]}')
             
         context = {"lista_cheques": lista_cheques,
                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
