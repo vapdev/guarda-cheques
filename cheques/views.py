@@ -1,4 +1,3 @@
-from django import http
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
@@ -8,9 +7,119 @@ import datetime
 import locale
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
+from xhtml2pdf import pisa
+from django.views import View
+from io import BytesIO
+from django.template.loader import get_template
 
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
+
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
+
+#Automaticly downloads to PDF file
+class DownloadPDF(View):
+    def get(self, request, *args, **kwargs):
+        query = {
+        "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
+        "dt_liberacao_fim": request.GET.get("dt_liberacao_fim"),
+        "dt_cadastro_ini": request.GET.get("dt_cadastro_ini"),
+        "dt_cadastro_fim": request.GET.get("dt_cadastro_fim"),
+        "empresa": request.GET.get("empresa"),
+        "destinatario": request.GET.get("destinatario"),
+        "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
+        "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
+        }
+        if request.GET.get("empresa") and request.GET.get("empresa") != "0":
+            empresa = Empresa.objects.get(id=request.GET.get("empresa"))
+        print(type(query["dt_liberacao_ini"]))
+        lista_cheques = Cheque.objects.all().order_by("dt_futura")
+        dt_liberacao_ini = request.GET.get("dt_liberacao_ini")
+        dt_liberacao_fim = request.GET.get("dt_liberacao_fim")
+        lista_filtros = []
+        if query["dt_liberacao_ini"] and query["dt_liberacao_fim"]:
+            lista_cheques = Cheque.objects.filter(
+                dt_futura__gte=query["dt_liberacao_ini"],
+                dt_futura__lte=query["dt_liberacao_fim"],
+            ).order_by("dt_futura")
+            print('lista: '+str(query["dt_liberacao_ini"]))
+            unformatted_ini = str(query["dt_liberacao_ini"]).split("-")
+            ano = unformatted_ini[0]
+            mes = unformatted_ini[1]
+            dia = unformatted_ini[2]
+            formatted_ini = f'{dia}/{mes}/{ano}'
+
+            unformatted_fim = str(query["dt_liberacao_fim"]).split("-")
+            ano = unformatted_fim[0]
+            mes = unformatted_fim[1]
+            dia = unformatted_fim[2]
+            formatted_fim = f'{dia}/{mes}/{ano}'
+            print (ano)
+            lista_filtros.append(f'Relatório dos cheques compensados entre {formatted_ini} e {formatted_fim}')
+            
+
+        elif query["dt_liberacao_ini"] and not query["dt_liberacao_fim"]:
+            lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"]).order_by("dt_futura")
+            lista_filtros.append(f'Relatório dos cheques compensados a partir de {query["dt_liberacao_ini"]}')
+            unformatted_ini = str(query["dt_liberacao_ini"]).split("-")
+            ano = unformatted_ini[0]
+            mes = unformatted_ini[1]
+            dia = unformatted_ini[2]
+            formatted_ini = f'{dia}/{mes}/{ano}'
+
+        elif query["dt_liberacao_fim"] and not query["dt_liberacao_ini"]:
+            lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_liberacao_fim"]).order_by("dt_futura")
+            lista_filtros.append(f'Relatório dos cheques compensados até {query["dt_liberacao_fim"]}')
+            unformatted_fim = str(query["dt_liberacao_fim"]).split("-")
+            ano = unformatted_fim[0]
+            mes = unformatted_fim[1]
+            dia = unformatted_fim[2]
+            formatted_fim = f'{dia}/{mes}/{ano}'
+        # if query["dt_cadastro_ini"] and query["dt_cadastro_fim"]:
+        #     lista_cheques = Cheque.objects.filter(
+        #         dt_futura__gte=query["dt_cadastro_ini"],
+        #         dt_futura__lte=query["dt_cadastro_fim"],
+        #     )
+        # elif query["dt_cadastro_ini"] and not query["dt_cadastro_fim"]:
+        #     lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_cadastro_ini"])
+        # elif query["dt_cadastro_fim"] and not query["dt_cadastro_ini"]:
+        #     lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_cadastro_fim"])
+
+        if query["empresa"] and query["empresa"] != "0":
+            lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
+            lista_filtros.append(f'Relatório dos cheques compensados pela empresa {empresa.nome}')
+
+        if query["destinatario"] and query["empresa"]=="0":
+            lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).order_by("dt_futura")
+            lista_filtros.append(f'Relatório dos cheques compensados pelo destinatário {query["destinatario"]}')
+
+        elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
+            lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
+            lista_filtros.append(f'Relatório dos cheques compensados pelo destinatário {query["destinatario"]} pagos pela empresa {query["empresa"]}')
+            
+        context = {"lista_cheques": lista_cheques}
+        
+        if lista_filtros:
+            context = {"lista_cheques": lista_cheques,
+                    "lista_filtros": lista_filtros[0]}
+        
+        print(lista_filtros)
+
+        pdf = render_to_pdf('cheques/pdf_template.html', context)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f"relatorio{datetime.datetime.today().strftime('%d-%m-%Y-%H:%M:%S')}.pdf" 
+        content = "attachment; filename=%s" %(filename)
+        response['Content-Disposition'] = content
+        return response
+
+
 
 def home(request):
     return redirect("index")
@@ -24,7 +133,7 @@ def logout(request):
 @login_required
 def index(request):
     lista_empresas = Empresa.objects.all()
-    lista_cheques = Cheque.objects.all()
+    lista_cheques = Cheque.objects.all().order_by("dt_futura")
 
     query = {
         "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
@@ -65,14 +174,6 @@ def index(request):
     elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
         lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"]))
 
-    if query["ordem_dt_cadastro"]:
-        lista_cheques = Cheque.objects.order_by("dt_record")
-    if query["ordem_dt_liberacao"]:
-        lista_cheques = Cheque.objects.order_by("dt_futura")
-
-    print("queryset")
-    print(lista_cheques.query)
-
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)
 
@@ -97,14 +198,12 @@ def add(request):
 
         cheque_instance = Cheque.objects.create(**itens)
         ULTIMA_EMPRESA = Empresa.objects.get(pk=request.POST.get("empresa"))
-        print('empr:' +str(ULTIMA_EMPRESA))
         return redirect("index")
 
 @login_required
 def novo(request):
     lista_cheques = Cheque.objects.all()
     lista_empresas = Empresa.objects.all()
-    print("teste empresa: "+str(ULTIMA_EMPRESA))
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "ultima_empresa": ULTIMA_EMPRESA}
     return render(request, "cheques/novo.html", context)
 
@@ -112,7 +211,6 @@ def novo(request):
 def get_data(request, id):
     if request.method == "GET":
         obj = Empresa.objects.get(id=id)
-        print("aqui: " + str(obj.conta))
         data_dict = {"conta": obj.conta, "banco": obj.banco, "agencia": obj.agencia}
         data = simplejson.dumps(data_dict)
         return HttpResponse(data, content_type="application/json")
@@ -148,7 +246,6 @@ def addcadastro(request):
         print("get")
         return HttpResponse("get")
     elif request.method == "POST":
-        print("request: " + str(request))
         itens = {
             "nome": request.POST.get("nome"),
             "cpfpj": request.POST.get("cpfpj"),

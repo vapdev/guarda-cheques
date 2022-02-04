@@ -16,4 +16,5 @@ urlpatterns = [
     path("edit/", views.edit, name="edit"),
     path("logout/", views.logout, name="logout"),
     path("get_data/<int:id>", views.get_data, name="get_data"),
+    path('pdf_download/', views.DownloadPDF.as_view(), name="pdf_download"),
 ]
