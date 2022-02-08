@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 class Empresa(models.Model):
@@ -8,6 +9,7 @@ class Empresa(models.Model):
     conta = models.CharField(max_length=50, blank=True, null=True)
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=50, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     dt_record = models.DateField()
 
 
@@ -23,6 +25,7 @@ class Cheque(models.Model):
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=50, blank=True, null=True)
     conta = models.CharField(max_length=10, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
 
 
 class Historico(models.Model):
@@ -38,4 +41,5 @@ class Historico(models.Model):
     valor = models.FloatField(null=True)
     conta = models.CharField(max_length=10, blank=True, null=True)
     dt_comp_excl = models.DateField(blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     compensado = models.BooleanField()

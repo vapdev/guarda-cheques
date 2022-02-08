@@ -58,11 +58,14 @@
             <div class="col-3">
                 <p>Data de compensação</p>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <p>Empresa</p>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <p>Destinatário</p>
+            </div>
+            <div class="col-2">
+                <p>Nr Cheque</p>
             </div>
         </div>
 
@@ -83,8 +86,8 @@
                     <input type="date" id="dt_liberacao_fim" name="dt_liberacao_fim">
                 </div>
 
-                <div class="col-3">
-                    <select name="empresa" id="empresa">
+                <div class="col-2">
+                    <select name="empresa" id="empresa" style="width: 200px;">
                         <option value="0">Todas empresas</option>
                         {% for empresa in lista_empresas %}
                         <option value="{{ empresa.id }}">{{ empresa.nome }} - {{ empresa.cpfpj }}</option>
@@ -92,8 +95,12 @@
                     </select>
                 </div>
 
-                <div class="col-3">
+                <div class="col-2">
                     <input class="form-control" type="text" id="destinatario" name="destinatario">
+                </div>
+
+                <div class="col-2">
+                    <input class="form-control" type="text" id="nr_cheque" name="nr_cheque">
                 </div>
             </div>
     </div>

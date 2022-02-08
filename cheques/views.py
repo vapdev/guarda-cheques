@@ -12,6 +12,8 @@ from django.views import View
 from io import BytesIO
 from django.template.loader import get_template
 from django.db.models import Sum
+from django.conf import settings
+from django.db import models
 
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
@@ -37,11 +39,13 @@ class DownloadPDF(View):
         "destinatario": request.GET.get("destinatario"),
         "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
         "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
+        "user": request.user
         }
+
         if request.GET.get("empresa") and request.GET.get("empresa") != "0":
             empresa = Empresa.objects.get(id=request.GET.get("empresa"))
         print(type(query["dt_liberacao_ini"]))
-        lista_cheques = Cheque.objects.all().order_by("dt_futura")
+        lista_cheques = Cheque.objects.filter(user=query["user"]).order_by("dt_futura")
         dt_liberacao_ini = request.GET.get("dt_liberacao_ini")
         dt_liberacao_fim = request.GET.get("dt_liberacao_fim")
         lista_filtros = []
@@ -64,7 +68,7 @@ class DownloadPDF(View):
             formatted_fim = f'{dia}/{mes}/{ano}'
             print (ano)
             lista_filtros.append(f'Relatório dos cheques compensados entre {formatted_ini} e {formatted_fim}')
-            
+        
 
         elif query["dt_liberacao_ini"] and not query["dt_liberacao_fim"]:
             lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"]).order_by("dt_futura")
@@ -135,8 +139,9 @@ def logout(request):
 
 @login_required
 def index(request):
-    lista_empresas = Empresa.objects.all()
-    lista_cheques = Cheque.objects.all().order_by("dt_futura")
+    user = request.user.id
+    lista_empresas = Empresa.objects.filter(user=user)
+    lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
 
     query = {
         "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
@@ -147,35 +152,42 @@ def index(request):
         "destinatario": request.GET.get("destinatario"),
         "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
         "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
+        "nr_cheque": request.GET.get("nr_cheque"),
+        "user": request.user.id
     }
 
     if query["dt_liberacao_ini"] and query["dt_liberacao_fim"]:
         lista_cheques = Cheque.objects.filter(
             dt_futura__gte=query["dt_liberacao_ini"],
             dt_futura__lte=query["dt_liberacao_fim"],
+            user=query["user"]
         )
     elif query["dt_liberacao_ini"] and not query["dt_liberacao_fim"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"])
+        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"], user=query["user"])
     elif query["dt_liberacao_fim"] and not query["dt_liberacao_ini"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_liberacao_fim"])
+        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_liberacao_fim"], user=query["user"])
 
     if query["dt_cadastro_ini"] and query["dt_cadastro_fim"]:
         lista_cheques = Cheque.objects.filter(
             dt_futura__gte=query["dt_cadastro_ini"],
             dt_futura__lte=query["dt_cadastro_fim"],
+            user=query["user"]
         )
     elif query["dt_cadastro_ini"] and not query["dt_cadastro_fim"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_cadastro_ini"])
+        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_cadastro_ini"], user=query["user"])
     elif query["dt_cadastro_fim"] and not query["dt_cadastro_ini"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_cadastro_fim"])
+        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_cadastro_fim"], user=query["user"])
 
     if query["empresa"] and query["empresa"] != "0":
-        lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"]))
+        lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"]), user=query["user"])
 
     if query["destinatario"] and query["empresa"]=="0":
-        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"])
+        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"], user=query["user"])
     elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
-        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"]))
+        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"], empresa_id=int(query["empresa"]), user=query["user"])
+
+    if query["nr_cheque"]:
+        lista_cheques = Cheque.objects.filter(nr_cheque=query["nr_cheque"], user=query["user"])
 
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)
@@ -197,6 +209,7 @@ def add(request):
             "dt_futura": request.POST.get("dt_futura"),
             "dt_record": datetime.datetime.today(),
             "destinatario": request.POST.get("destinatario"),
+            "user": request.user
         }
 
         cheque_instance = Cheque.objects.create(**itens)
@@ -205,8 +218,9 @@ def add(request):
 
 @login_required
 def novo(request):
-    lista_cheques = Cheque.objects.all()
-    lista_empresas = Empresa.objects.all()
+    user = request.user.id
+    lista_cheques = Cheque.objects.filter(user=user)
+    lista_empresas = Empresa.objects.filter(user=user)
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "ultima_empresa": ULTIMA_EMPRESA}
     return render(request, "cheques/novo.html", context)
 
@@ -221,8 +235,9 @@ def get_data(request, id):
 
 @login_required
 def cadastro(request):
-    lista_cheques = Cheque.objects.all()
-    lista_empresas = Empresa.objects.all()
+    user = request.user.id
+    lista_cheques = Cheque.objects.filter(user=user)
+    lista_empresas = Empresa.objects.filter(user=user)
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
@@ -232,9 +247,10 @@ def cadastro(request):
 
 @login_required
 def hist(request):
-    lista_cheques = Cheque.objects.all()
-    lista_empresas = Empresa.objects.all()
-    lista_historico = Historico.objects.all().order_by("dt_comp_excl")
+    user = request.user.id
+    lista_cheques = Cheque.objects.filter(user=user)
+    lista_empresas = Empresa.objects.filter(user=user)
+    lista_historico = Historico.objects.filter(user=user).order_by("dt_comp_excl")
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
@@ -245,6 +261,7 @@ def hist(request):
 
 @login_required
 def addcadastro(request):
+    user = request.user.id
     if request.method == "GET":
         print("get")
         return HttpResponse("get")
@@ -256,6 +273,7 @@ def addcadastro(request):
             "agencia": request.POST.get("agencia"),
             "conta": request.POST.get("conta"),
             "dt_record": datetime.datetime.today(),
+            "user": request.user
         }
         empresa_instance = Empresa.objects.create(**itens)
         return redirect("cadastro")
@@ -277,6 +295,7 @@ def chequesdel(request, id=None):
             "destinatario": instance.destinatario,
             "dt_comp_excl": datetime.datetime.now(),
             "compensado": False,
+            "user": request.user
         }
         historico_instance = Historico.objects.create(**hist)
         historico_instance.save()
@@ -300,6 +319,7 @@ def compensar(request, id=None):
             "destinatario": instance.destinatario,
             "dt_comp_excl": datetime.datetime.now(),
             "compensado": True,
+            "user": request.user
         }
         historico_instance = Historico.objects.create(**hist)
         historico_instance.save()
@@ -310,8 +330,9 @@ def compensar(request, id=None):
 @login_required
 def editar(request, id=None):
     if request.method == "GET":
-        lista_cheques = Cheque.objects.all()
-        lista_empresas = Empresa.objects.all()
+        user = request.user.id
+        lista_cheques = Cheque.objects.filter(user=user)
+        lista_empresas = Empresa.objects.filter(user=user)
         edit = Cheque.objects.get(id=id)
         context = {
             "lista_cheques": lista_cheques,

@@ -20,7 +20,7 @@
             var conta = document.getElementById("conta")
             var agencia = document.getElementById("agencia")
             var banco = document.getElementById("banco")
-            fetch(`https://guarda-cheques.herokuapp.com/cheques/get_data/${a}`)
+            fetch(`/cheques/get_data/${a}`)
                 .then(data => {
                     if (!data.ok) {
                         throw Error(data.status);
@@ -158,7 +158,7 @@
         var conta = document.getElementById("conta")
         var agencia = document.getElementById("agencia")
         var banco = document.getElementById("banco")
-        fetch(`https://guarda-cheques.herokuapp.com/cheques/get_data/${a}`)
+        fetch(`/cheques/get_data/${a}`)
             .then(data => {
                 if (!data.ok) {
                     throw Error(data.status);
