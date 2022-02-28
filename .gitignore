@@ -1,4 +1,6 @@
 .venv/
+cheques/static/css/
+cheques/static/js/
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
