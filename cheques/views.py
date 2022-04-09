@@ -18,7 +18,9 @@ from django.db import models
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
 
-def render_to_pdf(template_src, context_dict={}):
+def render_to_pdf(template_src, context_dict=None):
+	if context_dict is None:
+		context_dict = {}
 	template = get_template(template_src)
 	html  = template.render(context_dict)
 	result = BytesIO()
