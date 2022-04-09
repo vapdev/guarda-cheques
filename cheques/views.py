@@ -200,7 +200,7 @@ def add(request):
     if request.method == "GET":
         print("get")
         return HttpResponse("get")
-    elif request.method == "POST":
+    if request.method == "POST":
         itens = {
             "nr_cheque": request.POST.get("nr_cheque"),
             "valor": request.POST.get("valor"),
@@ -267,7 +267,7 @@ def addcadastro(request):
     if request.method == "GET":
         print("get")
         return HttpResponse("get")
-    elif request.method == "POST":
+    if request.method == "POST":
         itens = {
             "nome": request.POST.get("nome"),
             "cpfpj": request.POST.get("cpfpj"),
@@ -350,8 +350,7 @@ def editar(request, id=None):
             "id": id,
         }
         return render(request, "cheques/editar.html", context)
-    else:
-        return redirect("editar")
+    return redirect("editar")
 
 
 @login_required
@@ -359,7 +358,7 @@ def edit(request):
     if request.method == "GET":
         print("get")
         return HttpResponse("get")
-    elif request.method == "POST":
+    if request.method == "POST":
         id = request.POST.get("id")
         cheque_instance = Cheque.objects.get(id=id)
         cheque_instance.nr_cheque= request.POST.get("nr_cheque")
