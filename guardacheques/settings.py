@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cheques.apps.ChequesConfig",
+    "crispy_forms"
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/cheques"
 LOGIN_URL = "/accounts/login"
+CRISPY_TEMPLATE_PACK = "bootstrap4"

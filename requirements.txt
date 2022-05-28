@@ -4,6 +4,7 @@ backports.zoneinfo==0.2.1
 Django==4.0.1
 django-cors-headers==3.11.0
 djangorestframework==3.13.1
+django-crispy-forms
 future==0.18.2
 html5lib==1.1
 Pillow==9.0.1
