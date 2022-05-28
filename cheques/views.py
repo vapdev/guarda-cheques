@@ -153,7 +153,8 @@ def index(request):
         "nr_cheque": request.GET.get("nr_cheque"),
         "user": request.user.id
     }
-    filters = Q(user=request.user.id)
+
+    filters = Q(user=user)
     if query["empresa"] != "0":
         filters &= Q(empresa_id=query["empresa"])
     if query["destinatario"]:
@@ -168,6 +169,7 @@ def index(request):
         filters &= Q(dt_futura__lte=query["dt_liberacao_fim"])
     if query["nr_cheque"]:
         filters &= Q(nr_cheque=query["nr_cheque"])
+
     lista_cheques = Cheque.objects.filter(filters)
 
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
