@@ -13,7 +13,7 @@ from io import BytesIO
 from django.template.loader import get_template
 from django.db.models import Sum
 from django.conf import settings
-from django.db import models
+from django.db.models import Q
 
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
@@ -128,16 +128,12 @@ class DownloadPDF(View):
         response['Content-Disposition'] = content
         return response
 
-
-
 def home(request):
     return redirect("index")
-
 
 def logout(request):
     django_logout(request)
     return redirect("index")
-
 
 @login_required
 def index(request):
@@ -157,43 +153,25 @@ def index(request):
         "nr_cheque": request.GET.get("nr_cheque"),
         "user": request.user.id
     }
-
-    if query["dt_liberacao_ini"] and query["dt_liberacao_fim"]:
-        lista_cheques = Cheque.objects.filter(
-            dt_futura__gte=query["dt_liberacao_ini"],
-            dt_futura__lte=query["dt_liberacao_fim"],
-            user=query["user"]
-        )
-    elif query["dt_liberacao_ini"] and not query["dt_liberacao_fim"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"], user=query["user"])
-    elif query["dt_liberacao_fim"] and not query["dt_liberacao_ini"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_liberacao_fim"], user=query["user"])
-
-    if query["dt_cadastro_ini"] and query["dt_cadastro_fim"]:
-        lista_cheques = Cheque.objects.filter(
-            dt_futura__gte=query["dt_cadastro_ini"],
-            dt_futura__lte=query["dt_cadastro_fim"],
-            user=query["user"]
-        )
-    elif query["dt_cadastro_ini"] and not query["dt_cadastro_fim"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_cadastro_ini"], user=query["user"])
-    elif query["dt_cadastro_fim"] and not query["dt_cadastro_ini"]:
-        lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_cadastro_fim"], user=query["user"])
-
-    if query["empresa"] and query["empresa"] != "0":
-        lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"]), user=query["user"])
-
-    if query["destinatario"] and query["empresa"]=="0":
-        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"], user=query["user"])
-    elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
-        lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"], empresa_id=int(query["empresa"]), user=query["user"])
-
+    filters = Q(user=request.user.id)
+    if query["empresa"] != "0":
+        filters &= Q(empresa_id=query["empresa"])
+    if query["destinatario"]:
+        filters &= Q(destinatario__icontains=query["destinatario"])
+    if query["dt_cadastro_ini"]:
+        filters &= Q(dt_record__gte=query["dt_cadastro_ini"])
+    if query["dt_cadastro_fim"]:
+        filters &= Q(dt_record__lte=query["dt_cadastro_fim"])
+    if query["dt_liberacao_ini"]:
+        filters &= Q(dt_futura__gte=query["dt_liberacao_ini"])
+    if query["dt_liberacao_fim"]:
+        filters &= Q(dt_futura__lte=query["dt_liberacao_fim"])
     if query["nr_cheque"]:
-        lista_cheques = Cheque.objects.filter(nr_cheque=query["nr_cheque"], user=query["user"])
+        filters &= Q(nr_cheque=query["nr_cheque"])
+    lista_cheques = Cheque.objects.filter(filters)
 
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)
-
 
 @login_required
 def add(request):
