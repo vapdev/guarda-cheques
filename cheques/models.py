@@ -5,7 +5,7 @@ from django.conf import settings
 # Create your models here.
 class Empresa(models.Model):
     nome = models.CharField(max_length=50)
-    cpfpj = models.CharField(max_length=50, unique=True)
+    cpfpj = models.CharField(max_length=50)
     conta = models.CharField(max_length=50, blank=True, null=True)
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=50, blank=True, null=True)

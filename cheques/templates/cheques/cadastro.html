@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'novo.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        function formata(campo_cpfpj){
+            if (campo_cpfpj.length == 11){
+                return campo_cpfpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            }
+            if (campo_cpfpj.length == 14){
+                return campo_cpfpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -130,7 +140,12 @@
 
                 <th scope="row">{{ forloop.counter }}</th>
                 <td style="text-align: center;">{{ empresa.nome }}</td>
-                <td style="text-align: center;">{{ empresa.cpfpj }}</td>
+                <td id="cpfpj{{ forloop.counter }}" style="text-align: center;">{{ empresa.cpfpj }}</td>
+                <script>
+                    masked = formata("{{ empresa.cpfpj }}")
+                    elem = document.getElementById("cpfpj{{ forloop.counter }}")
+                    elem.innerHTML = `{{ empresa.nome }} - ${masked}`
+                </script>
                 <td style="text-align: center;">{{ empresa.banco }}</td>
                 <td style="text-align: center;">{{ empresa.agencia }}</td>
                 <td style="text-align: center;">{{ empresa.conta }}</td>

@@ -153,10 +153,10 @@
                 <td>{{ cheque.destinatario }}</td>
                 <td style="text-align: right;">R${{ cheque.valor|stringformat:".2f" }}</td>
                 <td style="text-align: center;">{{ cheque.nr_cheque }}</td>
-                <td id="cpfp{{ forloop.counter }}"> {{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }} </td>
+                <td id="cpfpj{{ forloop.counter }}"> {{ cheque.empresa.nome }} - {{ cheque.empresa.cpfpj }} </td>
                 <script>
                     masked = formata("{{ cheque.empresa.cpfpj }}")
-                    elem = document.getElementById("cpfp{{ forloop.counter }}")
+                    elem = document.getElementById("cpfpj{{ forloop.counter }}")
                     elem.innerHTML = `{{ cheque.empresa.nome }} - ${masked}`
                 </script>
                 <td>{{ cheque.banco }}</td>
