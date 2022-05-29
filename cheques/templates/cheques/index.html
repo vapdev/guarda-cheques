@@ -73,17 +73,25 @@
             <div class="row">
 
                 <div class="col-3">
-                    <label class="label" for="dt_cadastro_ini">Inicial</label>
-                    <input type="date" name="dt_cadastro_ini" id="dt_cadastro_ini">
-                    <label id="dtfim" class="label" for="dt_cadastro_fim">Final</label>
-                    <input type="date" name="dt_cadastro_fim" id="dt_cadastro_fim">
+                    <div style={display:inline-block;}>
+                        <label class="label" for="dt_cadastro_ini">Inicial</label>
+                        <input class="dates" type="date" id="dt_cadastro_ini" name="dt_cadastro_ini">
+                    </div>
+                    <div style={display:inline-block;}>
+                        <label id="dtfim" for="dt_cadastro_fim">Final</label>
+                        <input type="date" id="dt_cadastro_fim" name="dt_cadastro_fim">
+                    </div>
                 </div>
 
                 <div class="col-3">
-                    <label class="label" for="dt_liberacao_ini">Inicial</label>
-                    <input type="date" id="dt_liberacao_ini" name="dt_liberacao_ini">
-                    <label id="dtfim" class="label" for="dt_liberacao_fim">Final</label>
-                    <input type="date" id="dt_liberacao_fim" name="dt_liberacao_fim">
+                    <div style={display:inline-block;}>
+                        <label class="label" for="dt_liberacao_ini">Inicial</label>
+                        <input class="dates" type="date" id="dt_liberacao_ini" name="dt_liberacao_ini">
+                    </div>
+                    <div style={display:inline-block;}>
+                        <label id="dtfim" for="dt_liberacao_fim">Final</label>
+                        <input type="date" id="dt_liberacao_fim" name="dt_liberacao_fim">
+                    </div>
                 </div>
 
                 <div class="col-2">
@@ -105,8 +113,8 @@
             </div>
     </div>
     <hr>
-    <div class="container ordens ata">
-        <div class="row">
+    <div class="container ordens">
+        <div class="row botoes">
             <div class="col-2 botaoconsulta">
                 <button type="submit" class="btn btn-success" formaction="{% url 'index' %}">Consultar</button>
             </div>
@@ -186,6 +194,28 @@
     </table>
     {% else %}
     <p style="margin-left: 5px">Consulte seus cheques.</p>
+    {% endif %}
+
+    {% if lista_cheques.has_other_pages %}
+        <ul class="pagination">
+            {% if lista_cheques.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ lista_cheques.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span></span></li>
+            {% endif %}
+            {% for i in lista_cheques.paginator.page_range %}
+                {% if lista_cheques.number == i %}
+                    <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if lista_cheques.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ lista_cheques.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span></span></li>
+            {% endif %}
+        </ul>
     {% endif %}
 
 </body>

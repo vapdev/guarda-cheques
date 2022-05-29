@@ -14,6 +14,8 @@ from django.template.loader import get_template
 from django.db.models import Sum
 from django.conf import settings
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 locale.setlocale(locale.LC_ALL, "")
 ULTIMA_EMPRESA = None
@@ -176,6 +178,15 @@ def index(request):
     if all(value == None for value in query.values()) :
         print('sem filtros')
         lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(lista_cheques, 70)
+    try:
+        lista_cheques = paginator.page(page)
+    except PageNotAnInteger:
+        lista_cheques = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
 
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
     return render(request, "cheques/index.html", context)

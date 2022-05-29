@@ -9,6 +9,19 @@ body{
   width: 300px;
 }
 
+.botoes{
+  width: 1100px;
+  margin: 0px;
+  padding: 0px;
+}
+
+
+.filtrodata{
+  display:inline-block;
+  border: 2px solid red;
+}
+
+
 .filtros{
   /* border: 2px solid black; */
   margin-left: 10px;
@@ -16,9 +29,9 @@ body{
 }
 
 .ordens{
-  /* border: 2px solid black; */
   margin-left: 10px;
   padding-left: 0px;
+  display: inline-block;
 }
 
 .item + .item{
@@ -39,8 +52,9 @@ body{
 }
 
 .botaoconsulta{
-  margin-top: 10px;
-  text-align: center;
+  width: fit-content;
+  padding: 0px;
+  margin-left: 0px;
 }
 
 #dtfim{
@@ -59,11 +73,6 @@ body{
 .datas{
   padding-top: 0;
 }
-
-.ata{
-  margin-bottom: 0px;
-}
-
 select{
   width: 150px;
 }
