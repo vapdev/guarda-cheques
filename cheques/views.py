@@ -235,7 +235,7 @@ def get_data(request, id):
 def cadastro(request):
     user = request.user.id
     lista_cheques = Cheque.objects.filter(user=user)
-    lista_empresas = Empresa.objects.filter(user=user)
+    lista_empresas = Empresa.objects.filter(user=user).order_by("nome")
     context = {
         "lista_cheques": lista_cheques,
         "lista_empresas": lista_empresas,
