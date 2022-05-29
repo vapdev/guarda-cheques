@@ -48,7 +48,6 @@ class DownloadPDF(View):
 
         if request.GET.get("empresa") and request.GET.get("empresa") != "0":
             empresa = Empresa.objects.get(id=request.GET.get("empresa"))
-        print(type(query["dt_liberacao_ini"]))
         lista_cheques = Cheque.objects.filter(user=query["user"]).order_by("dt_futura")
         dt_liberacao_ini = request.GET.get("dt_liberacao_ini")
         dt_liberacao_fim = request.GET.get("dt_liberacao_fim")
@@ -58,7 +57,6 @@ class DownloadPDF(View):
                 dt_futura__gte=query["dt_liberacao_ini"],
                 dt_futura__lte=query["dt_liberacao_fim"],
             ).order_by("dt_futura")
-            print('lista: '+str(query["dt_liberacao_ini"]))
             unformatted_ini = str(query["dt_liberacao_ini"]).split("-")
             ano = unformatted_ini[0]
             mes = unformatted_ini[1]
@@ -70,7 +68,6 @@ class DownloadPDF(View):
             mes = unformatted_fim[1]
             dia = unformatted_fim[2]
             formatted_fim = f'{dia}/{mes}/{ano}'
-            print (ano)
             lista_filtros.append(f'Relatório dos cheques compensados entre {formatted_ini} e {formatted_fim}')
         
 
@@ -120,8 +117,7 @@ class DownloadPDF(View):
             context = {"lista_cheques": lista_cheques,
                     "lista_filtros": lista_filtros[0],
                     "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
-        
-        print(lista_filtros)
+
 
         pdf = render_to_pdf('cheques/pdf_template.html', context)
         response = HttpResponse(pdf, content_type='application/pdf')
@@ -138,10 +134,31 @@ def logout(request):
     return redirect("index")
 
 @login_required
+def mantem_filtros(request):
+    if request.method == "GET":
+        user = request.user.id
+        lista_empresas = Empresa.objects.filter(user=user)
+        lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
+        print(request.get_full_path())
+        query = {
+            "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
+            "dt_liberacao_fim": request.GET.get("dt_liberacao_fim"),
+            "dt_cadastro_ini": request.GET.get("dt_cadastro_ini"),
+            "dt_cadastro_fim": request.GET.get("dt_cadastro_fim"),
+            "empresa": request.GET.get("empresa"),
+            "destinatario": request.GET.get("destinatario"),
+            "nr_cheque": request.GET.get("nr_cheque"),
+        }
+
+        print(query)
+
+        data = simplejson.dumps(query)
+        return HttpResponse(data, content_type="application/json")
+
+@login_required
 def index(request):
     user = request.user.id
     lista_empresas = Empresa.objects.filter(user=user)
-    lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
 
     query = {
         "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
@@ -155,28 +172,34 @@ def index(request):
         "nr_cheque": request.GET.get("nr_cheque"),
         "user": request.user.id
     }
-
     filters = Q(user=user)
+    filtros = {}
     if query["empresa"] != "0":
         filters &= Q(empresa_id=query["empresa"])
+        filtros["empresa"]=query["empresa"]
     if query["destinatario"]:
         filters &= Q(destinatario__icontains=query["destinatario"])
+        filtros["destinatario"] = query["destinatario"]
     if query["dt_cadastro_ini"]:
         filters &= Q(dt_record__gte=query["dt_cadastro_ini"])
+        filtros["dt_cadastro_ini"] = query["dt_cadastro_ini"]
     if query["dt_cadastro_fim"]:
         filters &= Q(dt_record__lte=query["dt_cadastro_fim"])
+        filtros["dt_cadastro_fim"] = query["dt_cadastro_fim"]
     if query["dt_liberacao_ini"]:
         filters &= Q(dt_futura__gte=query["dt_liberacao_ini"])
+        filtros["dt_liberacao_ini"] = query["dt_liberacao_ini"]
     if query["dt_liberacao_fim"]:
         filters &= Q(dt_futura__lte=query["dt_liberacao_fim"])
+        filtros["dt_liberacao_fim"] = query["dt_liberacao_fim"]
     if query["nr_cheque"]:
         filters &= Q(nr_cheque=query["nr_cheque"])
+        filtros["nr_cheque"] = query["nr_cheque"]
 
     lista_cheques = Cheque.objects.filter(filters).order_by("dt_futura")
     
     query.pop("user")
     if all(value == None for value in query.values()) :
-        print('sem filtros')
         lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
 
     page = request.GET.get('page', 1)
@@ -187,14 +210,13 @@ def index(request):
         lista_cheques = paginator.page(1)
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
-
-    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas}
+    print(filtros)
+    context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "filtros": filtros}
     return render(request, "cheques/index.html", context)
 
 @login_required
 def add(request):
     if request.method == "GET":
-        print("get")
         return HttpResponse("get")
     if request.method == "POST":
         itens = {
@@ -231,6 +253,7 @@ def get_data(request, id):
         return HttpResponse(data, content_type="application/json")
 
 
+
 @login_required
 def cadastro(request):
     user = request.user.id
@@ -261,7 +284,6 @@ def hist(request):
 def addcadastro(request):
     user = request.user.id
     if request.method == "GET":
-        print("get")
         return HttpResponse("get")
     if request.method == "POST":
         itens = {
@@ -352,7 +374,6 @@ def editar(request, id=None):
 @login_required
 def edit(request):
     if request.method == "GET":
-        print("get")
         return HttpResponse("get")
     if request.method == "POST":
         id = request.POST.get("id")

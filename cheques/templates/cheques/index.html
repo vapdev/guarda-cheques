@@ -24,6 +24,40 @@
             }
         }
     </script>
+    <script>
+        function mantem_filtros() {
+            var filtros = {{ filtros|safe }};
+            if (filtros.empresa) {
+                var empresa = document.getElementById("empresa")
+                empresa.value = filtros.empresa
+            }
+            if (filtros.destinatario) {
+                var destinatario = document.getElementById("destinatario")
+                destinatario.value = filtros.destinatario
+            }
+            if (filtros.nr_cheque){
+                var nr_cheque = document.getElementById("nr_cheque")
+                nr_cheque.value = filtros.nr_cheque
+            }
+            if (filtros.dt_cadastro_ini){
+                var dt_cadastro_ini = document.getElementById("dt_cadastro_ini")
+                dt_cadastro_ini.value = filtros.dt_cadastro_ini
+            }
+            if (filtros.dt_cadastro_fim) {
+                var dt_cadastro_fim = document.getElementById("dt_cadastro_fim")
+                dt_cadastro_fim.value = filtros.dt_cadastro_fim
+            }
+            if (filtros.dt_liberacao_ini){
+                console.log(filtros.dt_liberacao_ini)
+                var dt_liberacao_ini = document.getElementById("dt_liberacao_ini")
+                dt_liberacao_ini.value = filtros.dt_liberacao_ini
+            }
+            if (filtros.dt_liberacao_fim){
+                var dt_liberacao_fim = document.getElementById("dt_liberacao_fim")
+                dt_liberacao_fim.value = filtros.dt_liberacao_fim
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -112,6 +146,9 @@
                 </div>
             </div>
     </div>
+    <script>
+        mantem_filtros()
+    </script>
     <hr>
     <div class="container ordens">
         <div class="row botoes">
@@ -123,6 +160,9 @@
             </div>
             <div class="col-2 botaoconsulta">
                 <button type="submit" class="btn btn-info"  formaction="{% url 'pdf_download' %}">Exportar pra PDF</button>
+            </div>
+            <div class="col-2 botaoconsulta">
+                <a type="submit" class="btn btn-outline-secondary" href="/cheques">Limpar filtros</a>
             </div>
         </form>
         </div>
@@ -195,23 +235,24 @@
     {% else %}
     <p style="margin-left: 5px">Consulte seus cheques.</p>
     {% endif %}
+    {% load my_tags %}
 
     {% if lista_cheques.has_other_pages %}
         <ul class="pagination">
             {% if lista_cheques.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ lista_cheques.previous_page_number }}">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=lista_cheques.previous_page_number %}">&laquo;</a></li>
             {% else %}
                 <li class="disabled"><span></span></li>
             {% endif %}
             {% for i in lista_cheques.paginator.page_range %}
                 {% if lista_cheques.number == i %}
-                    <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    <li class="page-item active"><a class="page-link" href="?{% param_replace page=i %}">{{ i }}</a></li>
                 {% else %}
-                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    <li class="page-item"><a class="page-link" href="?{% param_replace page=i  %}">{{ i }}</a></li>
                 {% endif %}
             {% endfor %}
             {% if lista_cheques.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ lista_cheques.next_page_number }}">&raquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=lista_cheques.next_page_number %}">&raquo;</a></li>
             {% else %}
                 <li class="disabled"><span></span></li>
             {% endif %}

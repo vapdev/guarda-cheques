@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{% static 'novo.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script>
-        function updateFields(id) {
+        function updateFields() {
             var a = document.getElementById("empresa").value
             var conta = document.getElementById("conta")
             var agencia = document.getElementById("agencia")
@@ -81,7 +81,7 @@
 
             <div class="row row-cols-5">
                 <div class="col">
-                    <select class="form-control" onchange="updateFields(this)" name="empresa" id="empresa" value="{{ ultima_empresa }}" autofocus> 
+                    <select class="form-control" onchange="updateFields()" name="empresa" id="empresa" value="{{ ultima_empresa }}" autofocus>
                         {% for empresa in lista_empresas %}
                         <option id="empresaopt" value="{{ empresa.id }}">{{ empresa.nome }}
                         </option>

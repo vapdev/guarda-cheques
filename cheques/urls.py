@@ -16,5 +16,6 @@ urlpatterns = [
     path("edit/", views.edit, name="edit"),
     path("logout/", views.logout, name="logout"),
     path("get_data/<int:id>", views.get_data, name="get_data"),
+    path("mantem_filtros/", views.mantem_filtros, name="mantem_filtros"),
     path('pdf_download/', views.DownloadPDF.as_view(), name="pdf_download"),
 ]
