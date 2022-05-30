@@ -46,77 +46,36 @@ class DownloadPDF(View):
         "user": request.user
         }
 
-        if request.GET.get("empresa") and request.GET.get("empresa") != "0":
-            empresa = Empresa.objects.get(id=request.GET.get("empresa"))
-        lista_cheques = Cheque.objects.filter(user=query["user"]).order_by("dt_futura")
-        dt_liberacao_ini = request.GET.get("dt_liberacao_ini")
-        dt_liberacao_fim = request.GET.get("dt_liberacao_fim")
-        lista_filtros = []
-        if query["dt_liberacao_ini"] and query["dt_liberacao_fim"]:
-            lista_cheques = Cheque.objects.filter(
-                dt_futura__gte=query["dt_liberacao_ini"],
-                dt_futura__lte=query["dt_liberacao_fim"],
-            ).order_by("dt_futura")
-            unformatted_ini = str(query["dt_liberacao_ini"]).split("-")
-            ano = unformatted_ini[0]
-            mes = unformatted_ini[1]
-            dia = unformatted_ini[2]
-            formatted_ini = f'{dia}/{mes}/{ano}'
+        filters = Q(user=request.user)
+        filtros = {}
+        if query["empresa"] != "0":
+            filters &= Q(empresa_id=query["empresa"])
+            filtros["empresa"] = query["empresa"]
+        if query["destinatario"]:
+            filters &= Q(destinatario__icontains=query["destinatario"])
+            filtros["destinatario"] = query["destinatario"]
+        if query["dt_cadastro_ini"]:
+            filters &= Q(dt_record__gte=query["dt_cadastro_ini"])
+            filtros["dt_cadastro_ini"] = query["dt_cadastro_ini"]
+        if query["dt_cadastro_fim"]:
+            filters &= Q(dt_record__lte=query["dt_cadastro_fim"])
+            filtros["dt_cadastro_fim"] = query["dt_cadastro_fim"]
+        if query["dt_liberacao_ini"]:
+            filters &= Q(dt_futura__gte=query["dt_liberacao_ini"])
+            filtros["dt_liberacao_ini"] = query["dt_liberacao_ini"]
+        if query["dt_liberacao_fim"]:
+            filters &= Q(dt_futura__lte=query["dt_liberacao_fim"])
+            filtros["dt_liberacao_fim"] = query["dt_liberacao_fim"]
 
-            unformatted_fim = str(query["dt_liberacao_fim"]).split("-")
-            ano = unformatted_fim[0]
-            mes = unformatted_fim[1]
-            dia = unformatted_fim[2]
-            formatted_fim = f'{dia}/{mes}/{ano}'
-            lista_filtros.append(f'Relatório dos cheques compensados entre {formatted_ini} e {formatted_fim}')
-        
-
-        elif query["dt_liberacao_ini"] and not query["dt_liberacao_fim"]:
-            lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_liberacao_ini"]).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques compensados a partir de {query["dt_liberacao_ini"]}')
-            unformatted_ini = str(query["dt_liberacao_ini"]).split("-")
-            ano = unformatted_ini[0]
-            mes = unformatted_ini[1]
-            dia = unformatted_ini[2]
-            formatted_ini = f'{dia}/{mes}/{ano}'
-
-        elif query["dt_liberacao_fim"] and not query["dt_liberacao_ini"]:
-            lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_liberacao_fim"]).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques compensados até {query["dt_liberacao_fim"]}')
-            unformatted_fim = str(query["dt_liberacao_fim"]).split("-")
-            ano = unformatted_fim[0]
-            mes = unformatted_fim[1]
-            dia = unformatted_fim[2]
-            formatted_fim = f'{dia}/{mes}/{ano}'
-        # if query["dt_cadastro_ini"] and query["dt_cadastro_fim"]:
-        #     lista_cheques = Cheque.objects.filter(
-        #         dt_futura__gte=query["dt_cadastro_ini"],
-        #         dt_futura__lte=query["dt_cadastro_fim"],
-        #     )
-        # elif query["dt_cadastro_ini"] and not query["dt_cadastro_fim"]:
-        #     lista_cheques = Cheque.objects.filter(dt_futura__gte=query["dt_cadastro_ini"])
-        # elif query["dt_cadastro_fim"] and not query["dt_cadastro_ini"]:
-        #     lista_cheques = Cheque.objects.filter(dt_futura__lte=query["dt_cadastro_fim"])
-
-        if query["empresa"] and query["empresa"] != "0":
-            lista_cheques = Cheque.objects.filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques da empresa {empresa.nome}')
-
-        if query["destinatario"] and query["empresa"]=="0":
-            lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques de destinatário {query["destinatario"]}')
-
-        elif query["destinatario"] and query["empresa"] and query["empresa"] != "0":
-            lista_cheques = Cheque.objects.filter(destinatario__icontains=query["destinatario"]).filter(empresa_id=int(query["empresa"])).order_by("dt_futura")
-            lista_filtros.append(f'Relatório dos cheques de destinatário {query["destinatario"]} confeccionados pela empresa {query["empresa"]}')
+        lista_cheques = Cheque.objects.filter(filters).order_by("dt_futura")
             
         context = {"lista_cheques": lista_cheques,
                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
-        
-        if lista_filtros:
-            context = {"lista_cheques": lista_cheques,
-                    "lista_filtros": lista_filtros[0],
-                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
+
+        # if lista_filtros:
+        #     context = {"lista_cheques": lista_cheques,
+        #             "lista_filtros": lista_filtros[0],
+        #             "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
 
 
         pdf = render_to_pdf('cheques/pdf_template.html', context)
@@ -211,6 +170,7 @@ def index(request):
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
     print(filtros)
+
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "filtros": filtros}
     return render(request, "cheques/index.html", context)
 
