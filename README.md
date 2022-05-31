@@ -1,7 +1,7 @@
 # guarda-cheques
 
 #### Site desenvolvido para gerenciamento de cheques pré-datados.
-#### Cadastre empresa, adicione, consulte, gerencie e imprima relatórios de seus cheques pré-datados.
+#### Cadastre empresas, adicione, consulte, gerencie e imprima relatórios de seus cheques pré-datados.
 
 
 
