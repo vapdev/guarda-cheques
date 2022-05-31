@@ -35,53 +35,59 @@ def render_to_pdf(template_src, context_dict=None):
 class DownloadPDF(View):
     def get(self, request, *args, **kwargs):
         query = {
-        "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
-        "dt_liberacao_fim": request.GET.get("dt_liberacao_fim"),
-        "dt_cadastro_ini": request.GET.get("dt_cadastro_ini"),
-        "dt_cadastro_fim": request.GET.get("dt_cadastro_fim"),
-        "empresa": request.GET.get("empresa"),
-        "destinatario": request.GET.get("destinatario"),
-        "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
-        "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
-        "user": request.user
+            "dt_liberacao_ini": request.GET.get("dt_liberacao_ini"),
+            "dt_liberacao_fim": request.GET.get("dt_liberacao_fim"),
+            "dt_cadastro_ini": request.GET.get("dt_cadastro_ini"),
+            "dt_cadastro_fim": request.GET.get("dt_cadastro_fim"),
+            "empresa": request.GET.get("empresa"),
+            "destinatario": request.GET.get("destinatario"),
+            "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
+            "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
+            "user": request.user
         }
 
         filters = Q(user=request.user)
         filtros = {}
+        lista_filtros=[]
         if query["empresa"] != "0":
             filters &= Q(empresa_id=query["empresa"])
             filtros["empresa"] = query["empresa"]
+            lista_filtros.append(query["empresa"])
         if query["destinatario"]:
             filters &= Q(destinatario__icontains=query["destinatario"])
             filtros["destinatario"] = query["destinatario"]
+            lista_filtros.append(query["destinatario"])
         if query["dt_cadastro_ini"]:
             filters &= Q(dt_record__gte=query["dt_cadastro_ini"])
             filtros["dt_cadastro_ini"] = query["dt_cadastro_ini"]
+            lista_filtros.append(query["dt_cadastro_ini"])
         if query["dt_cadastro_fim"]:
             filters &= Q(dt_record__lte=query["dt_cadastro_fim"])
             filtros["dt_cadastro_fim"] = query["dt_cadastro_fim"]
+            lista_filtros.append(query["dt_cadastro_fim"])
         if query["dt_liberacao_ini"]:
             filters &= Q(dt_futura__gte=query["dt_liberacao_ini"])
             filtros["dt_liberacao_ini"] = query["dt_liberacao_ini"]
+            lista_filtros.append(query["dt_liberacao_ini"])
         if query["dt_liberacao_fim"]:
             filters &= Q(dt_futura__lte=query["dt_liberacao_fim"])
             filtros["dt_liberacao_fim"] = query["dt_liberacao_fim"]
+            lista_filtros.append(query["dt_liberacao_fim"])
 
         lista_cheques = Cheque.objects.filter(filters).order_by("dt_futura")
-            
+
         context = {"lista_cheques": lista_cheques,
                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
 
-        # if lista_filtros:
-        #     context = {"lista_cheques": lista_cheques,
-        #             "lista_filtros": lista_filtros[0],
-        #             "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
-
+        if lista_filtros:
+            context = {"lista_cheques": lista_cheques,
+                    "lista_filtros": lista_filtros,
+                    "valor_total": lista_cheques.aggregate(Sum('valor'))['valor__sum']}
 
         pdf = render_to_pdf('cheques/pdf_template.html', context)
         response = HttpResponse(pdf, content_type='application/pdf')
-        filename = f"relatorio{datetime.datetime.today().strftime('%d-%m-%Y-%H:%M:%S')}.pdf" 
-        content = "attachment; filename=%s" %(filename)
+        filename = f"relatorio{datetime.datetime.today().strftime('%d-%m-%Y-%H:%M:%S')}.pdf"
+        content = "attachment; filename=%s" % (filename)
         response['Content-Disposition'] = content
         return response
 
@@ -107,6 +113,7 @@ def mantem_filtros(request):
             "empresa": request.GET.get("empresa"),
             "destinatario": request.GET.get("destinatario"),
             "nr_cheque": request.GET.get("nr_cheque"),
+            "qtd_itens_pag": request.GET.get("qtd_itens_pag")
         }
 
         print(query)
@@ -129,8 +136,10 @@ def index(request):
         "ordem_dt_cadastro": request.GET.get("ordem_dt_cadastro"),
         "ordem_dt_liberacao": request.GET.get("ordem_dt_liberacao"),
         "nr_cheque": request.GET.get("nr_cheque"),
-        "user": request.user.id
+        "user": request.user.id,
+        "qtd_itens_pag": request.GET.get("qtd_itens_pag")
     }
+    qtd_itens_pag = query["qtd_itens_pag"]
     filters = Q(user=user)
     filtros = {}
     if query["empresa"] != "0":
@@ -154,6 +163,8 @@ def index(request):
     if query["nr_cheque"]:
         filters &= Q(nr_cheque=query["nr_cheque"])
         filtros["nr_cheque"] = query["nr_cheque"]
+    if query["qtd_itens_pag"]:
+        filtros["qtd_itens_pag"] = query["qtd_itens_pag"]
 
     lista_cheques = Cheque.objects.filter(filters).order_by("dt_futura")
     
@@ -162,7 +173,12 @@ def index(request):
         lista_cheques = Cheque.objects.filter(user=user).order_by("dt_futura")
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(lista_cheques, 70)
+
+    nr_pages = query["qtd_itens_pag"]
+    if query["qtd_itens_pag"] == None:
+        nr_pages = query["qtd_itens_pag"] = 50
+
+    paginator = Paginator(lista_cheques, nr_pages)
     try:
         lista_cheques = paginator.page(page)
     except PageNotAnInteger:
@@ -170,7 +186,6 @@ def index(request):
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
     print(filtros)
-
     context = {"lista_cheques": lista_cheques, "lista_empresas": lista_empresas, "filtros": filtros}
     return render(request, "cheques/index.html", context)
 
